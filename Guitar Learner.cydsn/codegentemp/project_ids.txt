@@ -1,0 +1,5 @@
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|a2e0417f-2967-418b-8b9b-c69b4a9f8fc0
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|74ec33b2-0a57-4fb5-ab96-fa9e95828818
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|cb25cbef-1ae8-485a-b5ba-28d05fa40e5d
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|149d99f4-4825-4788-9608-318fd3487e2f
+C:\Users\YongY\Downloads\TFT_Tutorial_2022\TFT_with_emWin\Guitar Learner.cydsn\Guitar Learner.cyprj|d368fa67-53a7-47d1-90f5-debb48586780

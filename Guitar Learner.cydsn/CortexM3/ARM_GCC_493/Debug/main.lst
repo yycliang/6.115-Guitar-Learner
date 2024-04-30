@@ -1,0 +1,2794 @@
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"main.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.text.InitProject,"ax",%progbits
+  19              		.align	2
+  20              		.global	InitProject
+  21              		.thumb
+  22              		.thumb_func
+  23              		.type	InitProject, %function
+  24              	InitProject:
+  25              	.LFB64:
+  26              		.file 1 ".\\main.c"
+   1:.\main.c      **** /* ========================================
+   2:.\main.c      ****  *
+   3:.\main.c      ****  * Copyright YOUR COMPANY, THE YEAR
+   4:.\main.c      ****  * All Rights Reserved
+   5:.\main.c      ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:.\main.c      ****  *
+   7:.\main.c      ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:.\main.c      ****  * WHICH IS THE PROPERTY OF your company.
+   9:.\main.c      ****  *
+  10:.\main.c      ****  * ========================================
+  11:.\main.c      **** */
+  12:.\main.c      **** #include <project.h>
+  13:.\main.c      **** #include "GUI.h"
+  14:.\main.c      **** #include "tft.h"
+  15:.\main.c      **** 
+  16:.\main.c      **** void InitProject(void);
+  17:.\main.c      **** 
+  18:.\main.c      **** int main()
+  19:.\main.c      **** {         
+  20:.\main.c      ****     InitProject();                             // all of the emWin exmples use MainTask() as the en
+  21:.\main.c      ****     unsigned char lcd_position = 0;             // start LCD position and incremtn later
+  22:.\main.c      ****     int songStored[100];                        // initialize an empty display array
+  23:.\main.c      ****     uint16 adcResult = 0;
+  24:.\main.c      ****     for(;;) {
+  25:.\main.c      ****     
+  26:.\main.c      ****         // ADC 
+  27:.\main.c      ****         AMux_1_Select(0); // Select the Sound Input     
+  28:.\main.c      ****         if( ADC_SOUND_IN_IsEndConversion(ADC_SOUND_IN_WAIT_FOR_RESULT) ) // Makes sure that convers
+  29:.\main.c      ****         {
+  30:.\main.c      ****             LCD_Char_1_Position(0, lcd_position);
+  31:.\main.c      ****             LCD_Char_1_ClearDisplay();
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 2
+
+
+  32:.\main.c      ****             adcResult = ADC_SOUND_IN_GetResult16();		// read the adc and assign the value adcResult
+  33:.\main.c      ****         if (adcResult & 0x8000)
+  34:.\main.c      ****         {
+  35:.\main.c      ****             adcResult = 0;       // ignore negative ADC results
+  36:.\main.c      ****         }
+  37:.\main.c      ****         else if (adcResult >= 0xfff)
+  38:.\main.c      ****         {
+  39:.\main.c      ****             adcResult = 0xfff;      // ignore high ADC results
+  40:.\main.c      ****         }
+  41:.\main.c      ****             LCD_Char_1_PrintNumber(adcResult); // Able to print 0 through A on LCD
+  42:.\main.c      ****             CyDelay(100);
+  43:.\main.c      ****         }
+  44:.\main.c      ****         // IF DAW BTN
+  45:.\main.c      ****         if (BTN_LEARN_Read() == 0) {
+  46:.\main.c      ****             LED_RED_Write(1);
+  47:.\main.c      ****             LED_YELLOW_Write(1);
+  48:.\main.c      ****             LED_GREEN_Write(1);
+  49:.\main.c      ****             
+  50:.\main.c      ****             //DAC 
+  51:.\main.c      ****             DAC_SOUND_OUT_SetValue(adcResult);
+  52:.\main.c      ****             GUI_DispStringAt("DAW MODE", 50, 50);
+  53:.\main.c      ****         }
+  54:.\main.c      ****         // IF LEARN BTN
+  55:.\main.c      ****         if (BTN_DAW_Read() == 0){ //When switch 2 is pressed 
+  56:.\main.c      ****             LED_RED_Write(0);
+  57:.\main.c      ****             LED_YELLOW_Write(0);
+  58:.\main.c      ****             LED_GREEN_Write(0);
+  59:.\main.c      ****             GUI_DispStringAt("LEARN MODE", 50, 50);
+  60:.\main.c      ****         }
+  61:.\main.c      ****         // DISPLAYING A SONG 
+  62:.\main.c      ****         
+  63:.\main.c      ****         
+  64:.\main.c      ****         // CORRECT AND INCORRECT
+  65:.\main.c      ****         
+  66:.\main.c      ****         // RECORDING AND PLAYING
+  67:.\main.c      ****     
+  68:.\main.c      ****     }
+  69:.\main.c      **** }
+  70:.\main.c      **** 
+  71:.\main.c      **** void InitProject()
+  72:.\main.c      **** {
+  27              		.loc 1 72 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 08B5     		push	{r3, lr}
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 3, -8
+  34              		.cfi_offset 14, -4
+  73:.\main.c      ****     CyGlobalIntEnable;                      // Enable global interrupts
+  35              		.loc 1 73 0
+  36              	@ 73 ".\main.c" 1
+  37 0002 62B6     		CPSIE   i
+  38              	@ 0 "" 2
+  74:.\main.c      ****     SPIM_1_Start();                         // initialize SPIM component 
+  39              		.loc 1 74 0
+  40              		.thumb
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 3
+
+
+  41 0004 FFF7FEFF 		bl	SPIM_1_Start
+  42              	.LVL0:
+  75:.\main.c      ****     GUI_Init();                             // initilize graphics library
+  43              		.loc 1 75 0
+  44 0008 FFF7FEFF 		bl	GUI_Init
+  45              	.LVL1:
+  76:.\main.c      ****     GUI_Clear();
+  46              		.loc 1 76 0
+  47 000c FFF7FEFF 		bl	GUI_Clear
+  48              	.LVL2:
+  77:.\main.c      ****     GUI_SetFont(&GUI_Font8x16);
+  49              		.loc 1 77 0
+  50 0010 0848     		ldr	r0, .L3
+  51 0012 FFF7FEFF 		bl	GUI_SetFont
+  52              	.LVL3:
+  78:.\main.c      ****     
+  79:.\main.c      ****     LCD_Char_1_Start();					// initialize lcd
+  53              		.loc 1 79 0
+  54 0016 FFF7FEFF 		bl	LCD_Char_1_Start
+  55              	.LVL4:
+  80:.\main.c      **** 	LCD_Char_1_ClearDisplay();
+  56              		.loc 1 80 0
+  57 001a 0120     		movs	r0, #1
+  58 001c FFF7FEFF 		bl	LCD_Char_1_WriteControl
+  59              	.LVL5:
+  81:.\main.c      **** 	ADC_SOUND_IN_Start();				// strt the ADC_SOUND_IN
+  60              		.loc 1 81 0
+  61 0020 FFF7FEFF 		bl	ADC_SOUND_IN_Start
+  62              	.LVL6:
+  82:.\main.c      **** 	ADC_SOUND_IN_StartConvert();		// start the ADC_SOUND_IN conversion
+  63              		.loc 1 82 0
+  64 0024 FFF7FEFF 		bl	ADC_SOUND_IN_StartConvert
+  65              	.LVL7:
+  83:.\main.c      ****     AMux_1_Start();                     // Start the MUX 
+  66              		.loc 1 83 0
+  67 0028 FFF7FEFF 		bl	AMux_1_Start
+  68              	.LVL8:
+  84:.\main.c      ****     DAC_SOUND_OUT_Start();  // starts DAC and calls enable()
+  69              		.loc 1 84 0
+  70 002c FFF7FEFF 		bl	DAC_SOUND_OUT_Start
+  71              	.LVL9:
+  72 0030 08BD     		pop	{r3, pc}
+  73              	.L4:
+  74 0032 00BF     		.align	2
+  75              	.L3:
+  76 0034 00000000 		.word	GUI_Font8x16
+  77              		.cfi_endproc
+  78              	.LFE64:
+  79              		.size	InitProject, .-InitProject
+  80              		.section	.text.main,"ax",%progbits
+  81              		.align	2
+  82              		.global	main
+  83              		.thumb
+  84              		.thumb_func
+  85              		.type	main, %function
+  86              	main:
+  87              	.LFB63:
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 4
+
+
+  19:.\main.c      ****     InitProject();                             // all of the emWin exmples use MainTask() as the en
+  88              		.loc 1 19 0
+  89              		.cfi_startproc
+  90              		@ args = 0, pretend = 0, frame = 0
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+  92 0000 10B5     		push	{r4, lr}
+  93              		.cfi_def_cfa_offset 8
+  94              		.cfi_offset 4, -8
+  95              		.cfi_offset 14, -4
+  20:.\main.c      ****     unsigned char lcd_position = 0;             // start LCD position and incremtn later
+  96              		.loc 1 20 0
+  97 0002 FFF7FEFF 		bl	InitProject
+  98              	.LVL10:
+  23:.\main.c      ****     for(;;) {
+  99              		.loc 1 23 0
+ 100 0006 0024     		movs	r4, #0
+ 101              	.LVL11:
+ 102              	.L6:
+  27:.\main.c      ****         if( ADC_SOUND_IN_IsEndConversion(ADC_SOUND_IN_WAIT_FOR_RESULT) ) // Makes sure that convers
+ 103              		.loc 1 27 0
+ 104 0008 0020     		movs	r0, #0
+ 105 000a FFF7FEFF 		bl	AMux_1_Select
+ 106              	.LVL12:
+  28:.\main.c      ****         {
+ 107              		.loc 1 28 0
+ 108 000e 0020     		movs	r0, #0
+ 109 0010 FFF7FEFF 		bl	ADC_SOUND_IN_IsEndConversion
+ 110              	.LVL13:
+ 111 0014 D0B1     		cbz	r0, .L7
+  30:.\main.c      ****             LCD_Char_1_ClearDisplay();
+ 112              		.loc 1 30 0
+ 113 0016 0020     		movs	r0, #0
+ 114 0018 0146     		mov	r1, r0
+ 115 001a FFF7FEFF 		bl	LCD_Char_1_Position
+ 116              	.LVL14:
+  31:.\main.c      ****             adcResult = ADC_SOUND_IN_GetResult16();		// read the adc and assign the value adcResult
+ 117              		.loc 1 31 0
+ 118 001e 0120     		movs	r0, #1
+ 119 0020 FFF7FEFF 		bl	LCD_Char_1_WriteControl
+ 120              	.LVL15:
+  32:.\main.c      ****         if (adcResult & 0x8000)
+ 121              		.loc 1 32 0
+ 122 0024 FFF7FEFF 		bl	ADC_SOUND_IN_GetResult16
+ 123              	.LVL16:
+ 124 0028 84B2     		uxth	r4, r0
+ 125              	.LVL17:
+  33:.\main.c      ****         {
+ 126              		.loc 1 33 0
+ 127 002a 0028     		cmp	r0, #0
+ 128 002c 04DB     		blt	.L11
+  37:.\main.c      ****         {
+ 129              		.loc 1 37 0
+ 130 002e 40F6FE73 		movw	r3, #4094
+ 131 0032 9C42     		cmp	r4, r3
+ 132 0034 02D8     		bhi	.L12
+ 133 0036 03E0     		b	.L8
+ 134              	.L11:
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 5
+
+
+  35:.\main.c      ****         }
+ 135              		.loc 1 35 0
+ 136 0038 0024     		movs	r4, #0
+ 137              	.LVL18:
+ 138 003a 01E0     		b	.L8
+ 139              	.LVL19:
+ 140              	.L12:
+  39:.\main.c      ****         }
+ 141              		.loc 1 39 0
+ 142 003c 40F6FF74 		movw	r4, #4095
+ 143              	.LVL20:
+ 144              	.L8:
+  41:.\main.c      ****             CyDelay(100);
+ 145              		.loc 1 41 0
+ 146 0040 2046     		mov	r0, r4
+ 147 0042 FFF7FEFF 		bl	LCD_Char_1_PrintU32Number
+ 148              	.LVL21:
+  42:.\main.c      ****         }
+ 149              		.loc 1 42 0
+ 150 0046 6420     		movs	r0, #100
+ 151 0048 FFF7FEFF 		bl	CyDelay
+ 152              	.LVL22:
+ 153              	.L7:
+  45:.\main.c      ****             LED_RED_Write(1);
+ 154              		.loc 1 45 0
+ 155 004c FFF7FEFF 		bl	BTN_LEARN_Read
+ 156              	.LVL23:
+ 157 0050 80B9     		cbnz	r0, .L9
+  46:.\main.c      ****             LED_YELLOW_Write(1);
+ 158              		.loc 1 46 0
+ 159 0052 0120     		movs	r0, #1
+ 160 0054 FFF7FEFF 		bl	LED_RED_Write
+ 161              	.LVL24:
+  47:.\main.c      ****             LED_GREEN_Write(1);
+ 162              		.loc 1 47 0
+ 163 0058 0120     		movs	r0, #1
+ 164 005a FFF7FEFF 		bl	LED_YELLOW_Write
+ 165              	.LVL25:
+  48:.\main.c      ****             
+ 166              		.loc 1 48 0
+ 167 005e 0120     		movs	r0, #1
+ 168 0060 FFF7FEFF 		bl	LED_GREEN_Write
+ 169              	.LVL26:
+  51:.\main.c      ****             GUI_DispStringAt("DAW MODE", 50, 50);
+ 170              		.loc 1 51 0
+ 171 0064 E0B2     		uxtb	r0, r4
+ 172 0066 FFF7FEFF 		bl	DAC_SOUND_OUT_SetValue
+ 173              	.LVL27:
+  52:.\main.c      ****         }
+ 174              		.loc 1 52 0
+ 175 006a 0B48     		ldr	r0, .L14
+ 176 006c 3221     		movs	r1, #50
+ 177 006e 0A46     		mov	r2, r1
+ 178 0070 FFF7FEFF 		bl	GUI_DispStringAt
+ 179              	.LVL28:
+ 180              	.L9:
+  55:.\main.c      ****             LED_RED_Write(0);
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 6
+
+
+ 181              		.loc 1 55 0
+ 182 0074 FFF7FEFF 		bl	BTN_DAW_Read
+ 183              	.LVL29:
+ 184 0078 0028     		cmp	r0, #0
+ 185 007a C5D1     		bne	.L6
+  56:.\main.c      ****             LED_YELLOW_Write(0);
+ 186              		.loc 1 56 0
+ 187 007c FFF7FEFF 		bl	LED_RED_Write
+ 188              	.LVL30:
+  57:.\main.c      ****             LED_GREEN_Write(0);
+ 189              		.loc 1 57 0
+ 190 0080 0020     		movs	r0, #0
+ 191 0082 FFF7FEFF 		bl	LED_YELLOW_Write
+ 192              	.LVL31:
+  58:.\main.c      ****             GUI_DispStringAt("LEARN MODE", 50, 50);
+ 193              		.loc 1 58 0
+ 194 0086 0020     		movs	r0, #0
+ 195 0088 FFF7FEFF 		bl	LED_GREEN_Write
+ 196              	.LVL32:
+  59:.\main.c      ****         }
+ 197              		.loc 1 59 0
+ 198 008c 0348     		ldr	r0, .L14+4
+ 199 008e 3221     		movs	r1, #50
+ 200 0090 0A46     		mov	r2, r1
+ 201 0092 FFF7FEFF 		bl	GUI_DispStringAt
+ 202              	.LVL33:
+ 203 0096 B7E7     		b	.L6
+ 204              	.L15:
+ 205              		.align	2
+ 206              	.L14:
+ 207 0098 00000000 		.word	.LC0
+ 208 009c 0C000000 		.word	.LC1
+ 209              		.cfi_endproc
+ 210              	.LFE63:
+ 211              		.size	main, .-main
+ 212              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 213              		.align	2
+ 214              	.LC0:
+ 215 0000 44415720 		.ascii	"DAW MODE\000"
+ 215      4D4F4445 
+ 215      00
+ 216 0009 000000   		.space	3
+ 217              	.LC1:
+ 218 000c 4C454152 		.ascii	"LEARN MODE\000"
+ 218      4E204D4F 
+ 218      444500
+ 219 0017 00       		.text
+ 220              	.Letext0:
+ 221              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 222              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 223              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 224              		.file 5 "..\\..\\emWinGraphics_v5_46\\Code\\Include\\PSoC4_5/GUI_Type.h"
+ 225              		.file 6 "Generated_Source\\PSoC5/core_cm3.h"
+ 226              		.file 7 "..\\..\\emWinGraphics_v5_46\\Code\\Include\\PSoC4_5/GUI.h"
+ 227              		.file 8 "Generated_Source\\PSoC5/SPIM_1.h"
+ 228              		.file 9 "Generated_Source\\PSoC5/LCD_Char_1.h"
+ 229              		.file 10 "Generated_Source\\PSoC5/ADC_SOUND_IN.h"
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 7
+
+
+ 230              		.file 11 "Generated_Source\\PSoC5/AMux_1.h"
+ 231              		.file 12 "Generated_Source\\PSoC5/DAC_SOUND_OUT.h"
+ 232              		.file 13 "Generated_Source\\PSoC5/CyLib.h"
+ 233              		.file 14 "Generated_Source\\PSoC5/BTN_LEARN.h"
+ 234              		.file 15 "Generated_Source\\PSoC5/LED_RED.h"
+ 235              		.file 16 "Generated_Source\\PSoC5/LED_YELLOW.h"
+ 236              		.file 17 "Generated_Source\\PSoC5/LED_GREEN.h"
+ 237              		.file 18 "Generated_Source\\PSoC5/BTN_DAW.h"
+ 238              		.section	.debug_info,"",%progbits
+ 239              	.Ldebug_info0:
+ 240 0000 8E090000 		.4byte	0x98e
+ 241 0004 0400     		.2byte	0x4
+ 242 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 243 000a 04       		.byte	0x4
+ 244 000b 01       		.uleb128 0x1
+ 245 000c 4E040000 		.4byte	.LASF102
+ 246 0010 01       		.byte	0x1
+ 247 0011 3B040000 		.4byte	.LASF103
+ 248 0015 E3010000 		.4byte	.LASF104
+ 249 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 250 001d 00000000 		.4byte	0
+ 251 0021 00000000 		.4byte	.Ldebug_line0
+ 252 0025 02       		.uleb128 0x2
+ 253 0026 01       		.byte	0x1
+ 254 0027 06       		.byte	0x6
+ 255 0028 C9020000 		.4byte	.LASF0
+ 256 002c 02       		.uleb128 0x2
+ 257 002d 01       		.byte	0x1
+ 258 002e 08       		.byte	0x8
+ 259 002f A2020000 		.4byte	.LASF1
+ 260 0033 02       		.uleb128 0x2
+ 261 0034 02       		.byte	0x2
+ 262 0035 05       		.byte	0x5
+ 263 0036 5A000000 		.4byte	.LASF2
+ 264 003a 02       		.uleb128 0x2
+ 265 003b 02       		.byte	0x2
+ 266 003c 07       		.byte	0x7
+ 267 003d 47030000 		.4byte	.LASF3
+ 268 0041 03       		.uleb128 0x3
+ 269 0042 44040000 		.4byte	.LASF9
+ 270 0046 02       		.byte	0x2
+ 271 0047 3F       		.byte	0x3f
+ 272 0048 4C000000 		.4byte	0x4c
+ 273 004c 02       		.uleb128 0x2
+ 274 004d 04       		.byte	0x4
+ 275 004e 05       		.byte	0x5
+ 276 004f AF010000 		.4byte	.LASF4
+ 277 0053 02       		.uleb128 0x2
+ 278 0054 04       		.byte	0x4
+ 279 0055 07       		.byte	0x7
+ 280 0056 F4030000 		.4byte	.LASF5
+ 281 005a 02       		.uleb128 0x2
+ 282 005b 08       		.byte	0x8
+ 283 005c 05       		.byte	0x5
+ 284 005d 2D040000 		.4byte	.LASF6
+ 285 0061 02       		.uleb128 0x2
+ 286 0062 08       		.byte	0x8
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 8
+
+
+ 287 0063 07       		.byte	0x7
+ 288 0064 D5020000 		.4byte	.LASF7
+ 289 0068 04       		.uleb128 0x4
+ 290 0069 04       		.byte	0x4
+ 291 006a 05       		.byte	0x5
+ 292 006b 696E7400 		.ascii	"int\000"
+ 293 006f 02       		.uleb128 0x2
+ 294 0070 04       		.byte	0x4
+ 295 0071 07       		.byte	0x7
+ 296 0072 03030000 		.4byte	.LASF8
+ 297 0076 03       		.uleb128 0x3
+ 298 0077 9C030000 		.4byte	.LASF10
+ 299 007b 03       		.byte	0x3
+ 300 007c 2C       		.byte	0x2c
+ 301 007d 41000000 		.4byte	0x41
+ 302 0081 03       		.uleb128 0x3
+ 303 0082 88020000 		.4byte	.LASF11
+ 304 0086 04       		.byte	0x4
+ 305 0087 C2       		.byte	0xc2
+ 306 0088 2C000000 		.4byte	0x2c
+ 307 008c 03       		.uleb128 0x3
+ 308 008d E6030000 		.4byte	.LASF12
+ 309 0091 04       		.byte	0x4
+ 310 0092 C3       		.byte	0xc3
+ 311 0093 3A000000 		.4byte	0x3a
+ 312 0097 03       		.uleb128 0x3
+ 313 0098 ED030000 		.4byte	.LASF13
+ 314 009c 04       		.byte	0x4
+ 315 009d C4       		.byte	0xc4
+ 316 009e 53000000 		.4byte	0x53
+ 317 00a2 03       		.uleb128 0x3
+ 318 00a3 26010000 		.4byte	.LASF14
+ 319 00a7 04       		.byte	0x4
+ 320 00a8 C6       		.byte	0xc6
+ 321 00a9 33000000 		.4byte	0x33
+ 322 00ad 02       		.uleb128 0x2
+ 323 00ae 04       		.byte	0x4
+ 324 00af 04       		.byte	0x4
+ 325 00b0 6D010000 		.4byte	.LASF15
+ 326 00b4 02       		.uleb128 0x2
+ 327 00b5 08       		.byte	0x8
+ 328 00b6 04       		.byte	0x4
+ 329 00b7 06040000 		.4byte	.LASF16
+ 330 00bb 02       		.uleb128 0x2
+ 331 00bc 01       		.byte	0x1
+ 332 00bd 08       		.byte	0x8
+ 333 00be 7E030000 		.4byte	.LASF17
+ 334 00c2 02       		.uleb128 0x2
+ 335 00c3 04       		.byte	0x4
+ 336 00c4 07       		.byte	0x7
+ 337 00c5 64000000 		.4byte	.LASF18
+ 338 00c9 05       		.uleb128 0x5
+ 339 00ca 04       		.byte	0x4
+ 340 00cb CF000000 		.4byte	0xcf
+ 341 00cf 06       		.uleb128 0x6
+ 342 00d0 BB000000 		.4byte	0xbb
+ 343 00d4 05       		.uleb128 0x5
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 9
+
+
+ 344 00d5 04       		.byte	0x4
+ 345 00d6 DA000000 		.4byte	0xda
+ 346 00da 06       		.uleb128 0x6
+ 347 00db 2C000000 		.4byte	0x2c
+ 348 00df 05       		.uleb128 0x5
+ 349 00e0 04       		.byte	0x4
+ 350 00e1 E5000000 		.4byte	0xe5
+ 351 00e5 07       		.uleb128 0x7
+ 352 00e6 08       		.uleb128 0x8
+ 353 00e7 04       		.byte	0x4
+ 354 00e8 05       		.byte	0x5
+ 355 00e9 B6       		.byte	0xb6
+ 356 00ea 05010000 		.4byte	0x105
+ 357 00ee 09       		.uleb128 0x9
+ 358 00ef 633000   		.ascii	"c0\000"
+ 359 00f2 05       		.byte	0x5
+ 360 00f3 B7       		.byte	0xb7
+ 361 00f4 33000000 		.4byte	0x33
+ 362 00f8 00       		.byte	0
+ 363 00f9 09       		.uleb128 0x9
+ 364 00fa 633100   		.ascii	"c1\000"
+ 365 00fd 05       		.byte	0x5
+ 366 00fe B8       		.byte	0xb8
+ 367 00ff 33000000 		.4byte	0x33
+ 368 0103 02       		.byte	0x2
+ 369 0104 00       		.byte	0
+ 370 0105 03       		.uleb128 0x3
+ 371 0106 AF000000 		.4byte	.LASF19
+ 372 010a 05       		.byte	0x5
+ 373 010b B9       		.byte	0xb9
+ 374 010c E6000000 		.4byte	0xe6
+ 375 0110 08       		.uleb128 0x8
+ 376 0111 08       		.byte	0x8
+ 377 0112 05       		.byte	0x5
+ 378 0113 BB       		.byte	0xbb
+ 379 0114 3D010000 		.4byte	0x13d
+ 380 0118 0A       		.uleb128 0xa
+ 381 0119 83030000 		.4byte	.LASF20
+ 382 011d 05       		.byte	0x5
+ 383 011e BC       		.byte	0xbc
+ 384 011f 3A000000 		.4byte	0x3a
+ 385 0123 00       		.byte	0
+ 386 0124 0A       		.uleb128 0xa
+ 387 0125 CE050000 		.4byte	.LASF21
+ 388 0129 05       		.byte	0x5
+ 389 012a BD       		.byte	0xbd
+ 390 012b 3A000000 		.4byte	0x3a
+ 391 012f 02       		.byte	0x2
+ 392 0130 0A       		.uleb128 0xa
+ 393 0131 0A000000 		.4byte	.LASF22
+ 394 0135 05       		.byte	0x5
+ 395 0136 BE       		.byte	0xbe
+ 396 0137 3D010000 		.4byte	0x13d
+ 397 013b 04       		.byte	0x4
+ 398 013c 00       		.byte	0
+ 399 013d 05       		.uleb128 0x5
+ 400 013e 04       		.byte	0x4
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 10
+
+
+ 401 013f 43010000 		.4byte	0x143
+ 402 0143 06       		.uleb128 0x6
+ 403 0144 05010000 		.4byte	0x105
+ 404 0148 03       		.uleb128 0x3
+ 405 0149 73010000 		.4byte	.LASF23
+ 406 014d 05       		.byte	0x5
+ 407 014e BF       		.byte	0xbf
+ 408 014f 10010000 		.4byte	0x110
+ 409 0153 08       		.uleb128 0x8
+ 410 0154 08       		.byte	0x8
+ 411 0155 05       		.byte	0x5
+ 412 0156 C1       		.byte	0xc1
+ 413 0157 8C010000 		.4byte	0x18c
+ 414 015b 0A       		.uleb128 0xa
+ 415 015c 1A010000 		.4byte	.LASF24
+ 416 0160 05       		.byte	0x5
+ 417 0161 C2       		.byte	0xc2
+ 418 0162 2C000000 		.4byte	0x2c
+ 419 0166 00       		.byte	0
+ 420 0167 0A       		.uleb128 0xa
+ 421 0168 F5020000 		.4byte	.LASF25
+ 422 016c 05       		.byte	0x5
+ 423 016d C3       		.byte	0xc3
+ 424 016e 2C000000 		.4byte	0x2c
+ 425 0172 01       		.byte	0x1
+ 426 0173 0A       		.uleb128 0xa
+ 427 0174 6D000000 		.4byte	.LASF26
+ 428 0178 05       		.byte	0x5
+ 429 0179 C4       		.byte	0xc4
+ 430 017a 2C000000 		.4byte	0x2c
+ 431 017e 02       		.byte	0x2
+ 432 017f 0A       		.uleb128 0xa
+ 433 0180 31000000 		.4byte	.LASF27
+ 434 0184 05       		.byte	0x5
+ 435 0185 C5       		.byte	0xc5
+ 436 0186 D4000000 		.4byte	0xd4
+ 437 018a 04       		.byte	0x4
+ 438 018b 00       		.byte	0
+ 439 018c 03       		.uleb128 0x3
+ 440 018d 10000000 		.4byte	.LASF28
+ 441 0191 05       		.byte	0x5
+ 442 0192 C6       		.byte	0xc6
+ 443 0193 53010000 		.4byte	0x153
+ 444 0197 08       		.uleb128 0x8
+ 445 0198 0C       		.byte	0xc
+ 446 0199 05       		.byte	0x5
+ 447 019a C8       		.byte	0xc8
+ 448 019b E8010000 		.4byte	0x1e8
+ 449 019f 0A       		.uleb128 0xa
+ 450 01a0 1A010000 		.4byte	.LASF24
+ 451 01a4 05       		.byte	0x5
+ 452 01a5 C9       		.byte	0xc9
+ 453 01a6 2C000000 		.4byte	0x2c
+ 454 01aa 00       		.byte	0
+ 455 01ab 0A       		.uleb128 0xa
+ 456 01ac 34030000 		.4byte	.LASF29
+ 457 01b0 05       		.byte	0x5
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 11
+
+
+ 458 01b1 CA       		.byte	0xca
+ 459 01b2 2C000000 		.4byte	0x2c
+ 460 01b6 01       		.byte	0x1
+ 461 01b7 0A       		.uleb128 0xa
+ 462 01b8 62010000 		.4byte	.LASF30
+ 463 01bc 05       		.byte	0x5
+ 464 01bd CB       		.byte	0xcb
+ 465 01be 25000000 		.4byte	0x25
+ 466 01c2 02       		.byte	0x2
+ 467 01c3 0A       		.uleb128 0xa
+ 468 01c4 1E030000 		.4byte	.LASF31
+ 469 01c8 05       		.byte	0x5
+ 470 01c9 CC       		.byte	0xcc
+ 471 01ca 25000000 		.4byte	0x25
+ 472 01ce 03       		.byte	0x3
+ 473 01cf 0A       		.uleb128 0xa
+ 474 01d0 F5020000 		.4byte	.LASF25
+ 475 01d4 05       		.byte	0x5
+ 476 01d5 CD       		.byte	0xcd
+ 477 01d6 2C000000 		.4byte	0x2c
+ 478 01da 04       		.byte	0x4
+ 479 01db 0A       		.uleb128 0xa
+ 480 01dc 31000000 		.4byte	.LASF27
+ 481 01e0 05       		.byte	0x5
+ 482 01e1 CE       		.byte	0xce
+ 483 01e2 D4000000 		.4byte	0xd4
+ 484 01e6 08       		.byte	0x8
+ 485 01e7 00       		.byte	0
+ 486 01e8 03       		.uleb128 0x3
+ 487 01e9 B8010000 		.4byte	.LASF32
+ 488 01ed 05       		.byte	0x5
+ 489 01ee CF       		.byte	0xcf
+ 490 01ef 97010000 		.4byte	0x197
+ 491 01f3 0B       		.uleb128 0xb
+ 492 01f4 23050000 		.4byte	.LASF37
+ 493 01f8 0C       		.byte	0xc
+ 494 01f9 05       		.byte	0x5
+ 495 01fa D1       		.byte	0xd1
+ 496 01fb 30020000 		.4byte	0x230
+ 497 01ff 0A       		.uleb128 0xa
+ 498 0200 19040000 		.4byte	.LASF33
+ 499 0204 05       		.byte	0x5
+ 500 0205 D2       		.byte	0xd2
+ 501 0206 3A000000 		.4byte	0x3a
+ 502 020a 00       		.byte	0
+ 503 020b 0A       		.uleb128 0xa
+ 504 020c 42020000 		.4byte	.LASF34
+ 505 0210 05       		.byte	0x5
+ 506 0211 D3       		.byte	0xd3
+ 507 0212 3A000000 		.4byte	0x3a
+ 508 0216 02       		.byte	0x2
+ 509 0217 0A       		.uleb128 0xa
+ 510 0218 90010000 		.4byte	.LASF35
+ 511 021c 05       		.byte	0x5
+ 512 021d D4       		.byte	0xd4
+ 513 021e 30020000 		.4byte	0x230
+ 514 0222 04       		.byte	0x4
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 12
+
+
+ 515 0223 0A       		.uleb128 0xa
+ 516 0224 9B010000 		.4byte	.LASF36
+ 517 0228 05       		.byte	0x5
+ 518 0229 D5       		.byte	0xd5
+ 519 022a 3B020000 		.4byte	0x23b
+ 520 022e 08       		.byte	0x8
+ 521 022f 00       		.byte	0
+ 522 0230 05       		.uleb128 0x5
+ 523 0231 04       		.byte	0x4
+ 524 0232 36020000 		.4byte	0x236
+ 525 0236 06       		.uleb128 0x6
+ 526 0237 8C010000 		.4byte	0x18c
+ 527 023b 05       		.uleb128 0x5
+ 528 023c 04       		.byte	0x4
+ 529 023d 41020000 		.4byte	0x241
+ 530 0241 06       		.uleb128 0x6
+ 531 0242 F3010000 		.4byte	0x1f3
+ 532 0246 03       		.uleb128 0x3
+ 533 0247 23050000 		.4byte	.LASF37
+ 534 024b 05       		.byte	0x5
+ 535 024c D6       		.byte	0xd6
+ 536 024d F3010000 		.4byte	0x1f3
+ 537 0251 0B       		.uleb128 0xb
+ 538 0252 98000000 		.4byte	.LASF38
+ 539 0256 0C       		.byte	0xc
+ 540 0257 05       		.byte	0x5
+ 541 0258 D8       		.byte	0xd8
+ 542 0259 8E020000 		.4byte	0x28e
+ 543 025d 0A       		.uleb128 0xa
+ 544 025e 19040000 		.4byte	.LASF33
+ 545 0262 05       		.byte	0x5
+ 546 0263 D9       		.byte	0xd9
+ 547 0264 3A000000 		.4byte	0x3a
+ 548 0268 00       		.byte	0
+ 549 0269 0A       		.uleb128 0xa
+ 550 026a 42020000 		.4byte	.LASF34
+ 551 026e 05       		.byte	0x5
+ 552 026f DA       		.byte	0xda
+ 553 0270 3A000000 		.4byte	0x3a
+ 554 0274 02       		.byte	0x2
+ 555 0275 0A       		.uleb128 0xa
+ 556 0276 90010000 		.4byte	.LASF35
+ 557 027a 05       		.byte	0x5
+ 558 027b DB       		.byte	0xdb
+ 559 027c 8E020000 		.4byte	0x28e
+ 560 0280 04       		.byte	0x4
+ 561 0281 0A       		.uleb128 0xa
+ 562 0282 9B010000 		.4byte	.LASF36
+ 563 0286 05       		.byte	0x5
+ 564 0287 DC       		.byte	0xdc
+ 565 0288 99020000 		.4byte	0x299
+ 566 028c 08       		.byte	0x8
+ 567 028d 00       		.byte	0
+ 568 028e 05       		.uleb128 0x5
+ 569 028f 04       		.byte	0x4
+ 570 0290 94020000 		.4byte	0x294
+ 571 0294 06       		.uleb128 0x6
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 13
+
+
+ 572 0295 E8010000 		.4byte	0x1e8
+ 573 0299 05       		.uleb128 0x5
+ 574 029a 04       		.byte	0x4
+ 575 029b 9F020000 		.4byte	0x29f
+ 576 029f 06       		.uleb128 0x6
+ 577 02a0 51020000 		.4byte	0x251
+ 578 02a4 03       		.uleb128 0x3
+ 579 02a5 98000000 		.4byte	.LASF38
+ 580 02a9 05       		.byte	0x5
+ 581 02aa DD       		.byte	0xdd
+ 582 02ab 51020000 		.4byte	0x251
+ 583 02af 08       		.uleb128 0x8
+ 584 02b0 14       		.byte	0x14
+ 585 02b1 05       		.byte	0x5
+ 586 02b2 DF       		.byte	0xdf
+ 587 02b3 18030000 		.4byte	0x318
+ 588 02b7 0A       		.uleb128 0xa
+ 589 02b8 31000000 		.4byte	.LASF27
+ 590 02bc 05       		.byte	0x5
+ 591 02bd E0       		.byte	0xe0
+ 592 02be D4000000 		.4byte	0xd4
+ 593 02c2 00       		.byte	0
+ 594 02c3 0A       		.uleb128 0xa
+ 595 02c4 0F010000 		.4byte	.LASF39
+ 596 02c8 05       		.byte	0x5
+ 597 02c9 E1       		.byte	0xe1
+ 598 02ca D4000000 		.4byte	0xd4
+ 599 02ce 04       		.byte	0x4
+ 600 02cf 0A       		.uleb128 0xa
+ 601 02d0 91000000 		.4byte	.LASF40
+ 602 02d4 05       		.byte	0x5
+ 603 02d5 E2       		.byte	0xe2
+ 604 02d6 18030000 		.4byte	0x318
+ 605 02da 08       		.byte	0x8
+ 606 02db 0A       		.uleb128 0xa
+ 607 02dc 83030000 		.4byte	.LASF20
+ 608 02e0 05       		.byte	0x5
+ 609 02e1 E3       		.byte	0xe3
+ 610 02e2 3A000000 		.4byte	0x3a
+ 611 02e6 0C       		.byte	0xc
+ 612 02e7 0A       		.uleb128 0xa
+ 613 02e8 CE050000 		.4byte	.LASF21
+ 614 02ec 05       		.byte	0x5
+ 615 02ed E4       		.byte	0xe4
+ 616 02ee 3A000000 		.4byte	0x3a
+ 617 02f2 0E       		.byte	0xe
+ 618 02f3 0A       		.uleb128 0xa
+ 619 02f4 1A010000 		.4byte	.LASF24
+ 620 02f8 05       		.byte	0x5
+ 621 02f9 E5       		.byte	0xe5
+ 622 02fa 2C000000 		.4byte	0x2c
+ 623 02fe 10       		.byte	0x10
+ 624 02ff 0A       		.uleb128 0xa
+ 625 0300 F5020000 		.4byte	.LASF25
+ 626 0304 05       		.byte	0x5
+ 627 0305 E6       		.byte	0xe6
+ 628 0306 2C000000 		.4byte	0x2c
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 14
+
+
+ 629 030a 11       		.byte	0x11
+ 630 030b 0A       		.uleb128 0xa
+ 631 030c 6D000000 		.4byte	.LASF26
+ 632 0310 05       		.byte	0x5
+ 633 0311 E7       		.byte	0xe7
+ 634 0312 2C000000 		.4byte	0x2c
+ 635 0316 12       		.byte	0x12
+ 636 0317 00       		.byte	0
+ 637 0318 05       		.uleb128 0x5
+ 638 0319 04       		.byte	0x4
+ 639 031a 1E030000 		.4byte	0x31e
+ 640 031e 06       		.uleb128 0x6
+ 641 031f 48010000 		.4byte	0x148
+ 642 0323 03       		.uleb128 0x3
+ 643 0324 1F040000 		.4byte	.LASF41
+ 644 0328 05       		.byte	0x5
+ 645 0329 E8       		.byte	0xe8
+ 646 032a AF020000 		.4byte	0x2af
+ 647 032e 08       		.uleb128 0x8
+ 648 032f 06       		.byte	0x6
+ 649 0330 05       		.byte	0x5
+ 650 0331 F1       		.byte	0xf1
+ 651 0332 67030000 		.4byte	0x367
+ 652 0336 0A       		.uleb128 0xa
+ 653 0337 67010000 		.4byte	.LASF42
+ 654 033b 05       		.byte	0x5
+ 655 033c F2       		.byte	0xf2
+ 656 033d 3A000000 		.4byte	0x3a
+ 657 0341 00       		.byte	0
+ 658 0342 0A       		.uleb128 0xa
+ 659 0343 28000000 		.4byte	.LASF43
+ 660 0347 05       		.byte	0x5
+ 661 0348 F3       		.byte	0xf3
+ 662 0349 2C000000 		.4byte	0x2c
+ 663 034d 02       		.byte	0x2
+ 664 034e 0A       		.uleb128 0xa
+ 665 034f C2000000 		.4byte	.LASF44
+ 666 0353 05       		.byte	0x5
+ 667 0354 F4       		.byte	0xf4
+ 668 0355 2C000000 		.4byte	0x2c
+ 669 0359 03       		.byte	0x3
+ 670 035a 0A       		.uleb128 0xa
+ 671 035b 2C010000 		.4byte	.LASF45
+ 672 035f 05       		.byte	0x5
+ 673 0360 F5       		.byte	0xf5
+ 674 0361 2C000000 		.4byte	0x2c
+ 675 0365 04       		.byte	0x4
+ 676 0366 00       		.byte	0
+ 677 0367 03       		.uleb128 0x3
+ 678 0368 D6010000 		.4byte	.LASF46
+ 679 036c 05       		.byte	0x5
+ 680 036d F6       		.byte	0xf6
+ 681 036e 2E030000 		.4byte	0x32e
+ 682 0372 0C       		.uleb128 0xc
+ 683 0373 48000000 		.4byte	.LASF47
+ 684 0377 05       		.byte	0x5
+ 685 0378 1301     		.2byte	0x113
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 15
+
+
+ 686 037a 7E030000 		.4byte	0x37e
+ 687 037e 0D       		.uleb128 0xd
+ 688 037f 68000000 		.4byte	0x68
+ 689 0383 92030000 		.4byte	0x392
+ 690 0387 0E       		.uleb128 0xe
+ 691 0388 C9000000 		.4byte	0xc9
+ 692 038c 0E       		.uleb128 0xe
+ 693 038d 68000000 		.4byte	0x68
+ 694 0391 00       		.byte	0
+ 695 0392 0C       		.uleb128 0xc
+ 696 0393 4F050000 		.4byte	.LASF48
+ 697 0397 05       		.byte	0x5
+ 698 0398 1401     		.2byte	0x114
+ 699 039a 7E030000 		.4byte	0x37e
+ 700 039e 0C       		.uleb128 0xc
+ 701 039f 8D050000 		.4byte	.LASF49
+ 702 03a3 05       		.byte	0x5
+ 703 03a4 1501     		.2byte	0x115
+ 704 03a6 AA030000 		.4byte	0x3aa
+ 705 03aa 0F       		.uleb128 0xf
+ 706 03ab BA030000 		.4byte	0x3ba
+ 707 03af 0E       		.uleb128 0xe
+ 708 03b0 C9000000 		.4byte	0xc9
+ 709 03b4 0E       		.uleb128 0xe
+ 710 03b5 68000000 		.4byte	0x68
+ 711 03b9 00       		.byte	0
+ 712 03ba 10       		.uleb128 0x10
+ 713 03bb 0C       		.byte	0xc
+ 714 03bc 05       		.byte	0x5
+ 715 03bd 1701     		.2byte	0x117
+ 716 03bf EB030000 		.4byte	0x3eb
+ 717 03c3 11       		.uleb128 0x11
+ 718 03c4 8D030000 		.4byte	.LASF50
+ 719 03c8 05       		.byte	0x5
+ 720 03c9 1801     		.2byte	0x118
+ 721 03cb EB030000 		.4byte	0x3eb
+ 722 03cf 00       		.byte	0
+ 723 03d0 11       		.uleb128 0x11
+ 724 03d1 3A030000 		.4byte	.LASF51
+ 725 03d5 05       		.byte	0x5
+ 726 03d6 1901     		.2byte	0x119
+ 727 03d8 F1030000 		.4byte	0x3f1
+ 728 03dc 04       		.byte	0x4
+ 729 03dd 11       		.uleb128 0x11
+ 730 03de BE020000 		.4byte	.LASF52
+ 731 03e2 05       		.byte	0x5
+ 732 03e3 1A01     		.2byte	0x11a
+ 733 03e5 F7030000 		.4byte	0x3f7
+ 734 03e9 08       		.byte	0x8
+ 735 03ea 00       		.byte	0
+ 736 03eb 05       		.uleb128 0x5
+ 737 03ec 04       		.byte	0x4
+ 738 03ed 72030000 		.4byte	0x372
+ 739 03f1 05       		.uleb128 0x5
+ 740 03f2 04       		.byte	0x4
+ 741 03f3 92030000 		.4byte	0x392
+ 742 03f7 05       		.uleb128 0x5
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 16
+
+
+ 743 03f8 04       		.byte	0x4
+ 744 03f9 9E030000 		.4byte	0x39e
+ 745 03fd 0C       		.uleb128 0xc
+ 746 03fe 34010000 		.4byte	.LASF53
+ 747 0402 05       		.byte	0x5
+ 748 0403 1B01     		.2byte	0x11b
+ 749 0405 BA030000 		.4byte	0x3ba
+ 750 0409 0C       		.uleb128 0xc
+ 751 040a A4030000 		.4byte	.LASF54
+ 752 040e 05       		.byte	0x5
+ 753 040f 2401     		.2byte	0x124
+ 754 0411 15040000 		.4byte	0x415
+ 755 0415 12       		.uleb128 0x12
+ 756 0416 A4030000 		.4byte	.LASF54
+ 757 041a 24       		.byte	0x24
+ 758 041b 05       		.byte	0x5
+ 759 041c B101     		.2byte	0x1b1
+ 760 041e D7040000 		.4byte	0x4d7
+ 761 0422 11       		.uleb128 0x11
+ 762 0423 31050000 		.4byte	.LASF55
+ 763 0427 05       		.byte	0x5
+ 764 0428 B201     		.2byte	0x1b2
+ 765 042a E2050000 		.4byte	0x5e2
+ 766 042e 00       		.byte	0
+ 767 042f 11       		.uleb128 0x11
+ 768 0430 DC040000 		.4byte	.LASF56
+ 769 0434 05       		.byte	0x5
+ 770 0435 B301     		.2byte	0x1b3
+ 771 0437 E8050000 		.4byte	0x5e8
+ 772 043b 04       		.byte	0x4
+ 773 043c 11       		.uleb128 0x11
+ 774 043d 7F050000 		.4byte	.LASF57
+ 775 0441 05       		.byte	0x5
+ 776 0442 B401     		.2byte	0x1b4
+ 777 0444 EE050000 		.4byte	0x5ee
+ 778 0448 08       		.byte	0x8
+ 779 0449 11       		.uleb128 0x11
+ 780 044a 1D000000 		.4byte	.LASF58
+ 781 044e 05       		.byte	0x5
+ 782 044f B501     		.2byte	0x1b5
+ 783 0451 F4050000 		.4byte	0x5f4
+ 784 0455 0C       		.byte	0xc
+ 785 0456 11       		.uleb128 0x11
+ 786 0457 B0020000 		.4byte	.LASF59
+ 787 045b 05       		.byte	0x5
+ 788 045c B601     		.2byte	0x1b6
+ 789 045e FA050000 		.4byte	0x5fa
+ 790 0462 10       		.byte	0x10
+ 791 0463 11       		.uleb128 0x11
+ 792 0464 86010000 		.4byte	.LASF60
+ 793 0468 05       		.byte	0x5
+ 794 0469 B701     		.2byte	0x1b7
+ 795 046b 00060000 		.4byte	0x600
+ 796 046f 14       		.byte	0x14
+ 797 0470 11       		.uleb128 0x11
+ 798 0471 34030000 		.4byte	.LASF29
+ 799 0475 05       		.byte	0x5
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 17
+
+
+ 800 0476 B801     		.2byte	0x1b8
+ 801 0478 2C000000 		.4byte	0x2c
+ 802 047c 18       		.byte	0x18
+ 803 047d 11       		.uleb128 0x11
+ 804 047e 49050000 		.4byte	.LASF61
+ 805 0482 05       		.byte	0x5
+ 806 0483 B901     		.2byte	0x1b9
+ 807 0485 2C000000 		.4byte	0x2c
+ 808 0489 19       		.byte	0x19
+ 809 048a 11       		.uleb128 0x11
+ 810 048b 0F050000 		.4byte	.LASF62
+ 811 048f 05       		.byte	0x5
+ 812 0490 BA01     		.2byte	0x1ba
+ 813 0492 2C000000 		.4byte	0x2c
+ 814 0496 1A       		.byte	0x1a
+ 815 0497 11       		.uleb128 0x11
+ 816 0498 E4000000 		.4byte	.LASF63
+ 817 049c 05       		.byte	0x5
+ 818 049d BB01     		.2byte	0x1bb
+ 819 049f 2C000000 		.4byte	0x2c
+ 820 04a3 1B       		.byte	0x1b
+ 821 04a4 13       		.uleb128 0x13
+ 822 04a5 7000     		.ascii	"p\000"
+ 823 04a7 05       		.byte	0x5
+ 824 04a8 C101     		.2byte	0x1c1
+ 825 04aa 87050000 		.4byte	0x587
+ 826 04ae 1C       		.byte	0x1c
+ 827 04af 11       		.uleb128 0x11
+ 828 04b0 28000000 		.4byte	.LASF43
+ 829 04b4 05       		.byte	0x5
+ 830 04b5 C201     		.2byte	0x1c2
+ 831 04b7 2C000000 		.4byte	0x2c
+ 832 04bb 20       		.byte	0x20
+ 833 04bc 11       		.uleb128 0x11
+ 834 04bd C2000000 		.4byte	.LASF44
+ 835 04c1 05       		.byte	0x5
+ 836 04c2 C301     		.2byte	0x1c3
+ 837 04c4 2C000000 		.4byte	0x2c
+ 838 04c8 21       		.byte	0x21
+ 839 04c9 11       		.uleb128 0x11
+ 840 04ca 2C010000 		.4byte	.LASF45
+ 841 04ce 05       		.byte	0x5
+ 842 04cf C401     		.2byte	0x1c4
+ 843 04d1 2C000000 		.4byte	0x2c
+ 844 04d5 22       		.byte	0x22
+ 845 04d6 00       		.byte	0
+ 846 04d7 0C       		.uleb128 0xc
+ 847 04d8 47020000 		.4byte	.LASF64
+ 848 04dc 05       		.byte	0x5
+ 849 04dd 2601     		.2byte	0x126
+ 850 04df E3040000 		.4byte	0x4e3
+ 851 04e3 0F       		.uleb128 0xf
+ 852 04e4 EE040000 		.4byte	0x4ee
+ 853 04e8 0E       		.uleb128 0xe
+ 854 04e9 3A000000 		.4byte	0x3a
+ 855 04ed 00       		.byte	0
+ 856 04ee 0C       		.uleb128 0xc
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 18
+
+
+ 857 04ef 23030000 		.4byte	.LASF65
+ 858 04f3 05       		.byte	0x5
+ 859 04f4 2701     		.2byte	0x127
+ 860 04f6 FA040000 		.4byte	0x4fa
+ 861 04fa 0D       		.uleb128 0xd
+ 862 04fb 68000000 		.4byte	0x68
+ 863 04ff 0E050000 		.4byte	0x50e
+ 864 0503 0E       		.uleb128 0xe
+ 865 0504 3A000000 		.4byte	0x3a
+ 866 0508 0E       		.uleb128 0xe
+ 867 0509 0E050000 		.4byte	0x50e
+ 868 050d 00       		.byte	0
+ 869 050e 05       		.uleb128 0x5
+ 870 050f 04       		.byte	0x4
+ 871 0510 68000000 		.4byte	0x68
+ 872 0514 0C       		.uleb128 0xc
+ 873 0515 FF040000 		.4byte	.LASF66
+ 874 0519 05       		.byte	0x5
+ 875 051a 2801     		.2byte	0x128
+ 876 051c 20050000 		.4byte	0x520
+ 877 0520 0F       		.uleb128 0xf
+ 878 0521 30050000 		.4byte	0x530
+ 879 0525 0E       		.uleb128 0xe
+ 880 0526 30050000 		.4byte	0x530
+ 881 052a 0E       		.uleb128 0xe
+ 882 052b 3B050000 		.4byte	0x53b
+ 883 052f 00       		.byte	0
+ 884 0530 05       		.uleb128 0x5
+ 885 0531 04       		.byte	0x4
+ 886 0532 36050000 		.4byte	0x536
+ 887 0536 06       		.uleb128 0x6
+ 888 0537 09040000 		.4byte	0x409
+ 889 053b 05       		.uleb128 0x5
+ 890 053c 04       		.byte	0x4
+ 891 053d 67030000 		.4byte	0x367
+ 892 0541 0C       		.uleb128 0xc
+ 893 0542 C9010000 		.4byte	.LASF67
+ 894 0546 05       		.byte	0x5
+ 895 0547 2901     		.2byte	0x129
+ 896 0549 4D050000 		.4byte	0x54d
+ 897 054d 0D       		.uleb128 0xd
+ 898 054e BB000000 		.4byte	0xbb
+ 899 0552 61050000 		.4byte	0x561
+ 900 0556 0E       		.uleb128 0xe
+ 901 0557 30050000 		.4byte	0x530
+ 902 055b 0E       		.uleb128 0xe
+ 903 055c 3A000000 		.4byte	0x3a
+ 904 0560 00       		.byte	0
+ 905 0561 0C       		.uleb128 0xc
+ 906 0562 32020000 		.4byte	.LASF68
+ 907 0566 05       		.byte	0x5
+ 908 0567 2A01     		.2byte	0x12a
+ 909 0569 6D050000 		.4byte	0x56d
+ 910 056d 0D       		.uleb128 0xd
+ 911 056e 68000000 		.4byte	0x68
+ 912 0572 81050000 		.4byte	0x581
+ 913 0576 0E       		.uleb128 0xe
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 19
+
+
+ 914 0577 3A000000 		.4byte	0x3a
+ 915 057b 0E       		.uleb128 0xe
+ 916 057c 81050000 		.4byte	0x581
+ 917 0580 00       		.byte	0
+ 918 0581 05       		.uleb128 0x5
+ 919 0582 04       		.byte	0x4
+ 920 0583 E8010000 		.4byte	0x1e8
+ 921 0587 14       		.uleb128 0x14
+ 922 0588 04       		.byte	0x4
+ 923 0589 05       		.byte	0x5
+ 924 058a BC01     		.2byte	0x1bc
+ 925 058c C1050000 		.4byte	0x5c1
+ 926 0590 15       		.uleb128 0x15
+ 927 0591 5A030000 		.4byte	.LASF69
+ 928 0595 05       		.byte	0x5
+ 929 0596 BD01     		.2byte	0x1bd
+ 930 0598 DF000000 		.4byte	0xdf
+ 931 059c 15       		.uleb128 0x15
+ 932 059d 20010000 		.4byte	.LASF70
+ 933 05a1 05       		.byte	0x5
+ 934 05a2 BE01     		.2byte	0x1be
+ 935 05a4 C1050000 		.4byte	0x5c1
+ 936 05a8 15       		.uleb128 0x15
+ 937 05a9 79050000 		.4byte	.LASF71
+ 938 05ad 05       		.byte	0x5
+ 939 05ae BF01     		.2byte	0x1bf
+ 940 05b0 CC050000 		.4byte	0x5cc
+ 941 05b4 15       		.uleb128 0x15
+ 942 05b5 EC020000 		.4byte	.LASF72
+ 943 05b9 05       		.byte	0x5
+ 944 05ba C001     		.2byte	0x1c0
+ 945 05bc D7050000 		.4byte	0x5d7
+ 946 05c0 00       		.byte	0
+ 947 05c1 05       		.uleb128 0x5
+ 948 05c2 04       		.byte	0x4
+ 949 05c3 C7050000 		.4byte	0x5c7
+ 950 05c7 06       		.uleb128 0x6
+ 951 05c8 23030000 		.4byte	0x323
+ 952 05cc 05       		.uleb128 0x5
+ 953 05cd 04       		.byte	0x4
+ 954 05ce D2050000 		.4byte	0x5d2
+ 955 05d2 06       		.uleb128 0x6
+ 956 05d3 46020000 		.4byte	0x246
+ 957 05d7 05       		.uleb128 0x5
+ 958 05d8 04       		.byte	0x4
+ 959 05d9 DD050000 		.4byte	0x5dd
+ 960 05dd 06       		.uleb128 0x6
+ 961 05de A4020000 		.4byte	0x2a4
+ 962 05e2 05       		.uleb128 0x5
+ 963 05e3 04       		.byte	0x4
+ 964 05e4 D7040000 		.4byte	0x4d7
+ 965 05e8 05       		.uleb128 0x5
+ 966 05e9 04       		.byte	0x4
+ 967 05ea EE040000 		.4byte	0x4ee
+ 968 05ee 05       		.uleb128 0x5
+ 969 05ef 04       		.byte	0x4
+ 970 05f0 14050000 		.4byte	0x514
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 20
+
+
+ 971 05f4 05       		.uleb128 0x5
+ 972 05f5 04       		.byte	0x4
+ 973 05f6 41050000 		.4byte	0x541
+ 974 05fa 05       		.uleb128 0x5
+ 975 05fb 04       		.byte	0x4
+ 976 05fc 61050000 		.4byte	0x561
+ 977 0600 05       		.uleb128 0x5
+ 978 0601 04       		.byte	0x4
+ 979 0602 06060000 		.4byte	0x606
+ 980 0606 06       		.uleb128 0x6
+ 981 0607 FD030000 		.4byte	0x3fd
+ 982 060b 16       		.uleb128 0x16
+ 983 060c 7A000000 		.4byte	.LASF73
+ 984 0610 01       		.byte	0x1
+ 985 0611 47       		.byte	0x47
+ 986 0612 00000000 		.4byte	.LFB64
+ 987 0616 38000000 		.4byte	.LFE64-.LFB64
+ 988 061a 01       		.uleb128 0x1
+ 989 061b 9C       		.byte	0x9c
+ 990 061c 85060000 		.4byte	0x685
+ 991 0620 17       		.uleb128 0x17
+ 992 0621 08000000 		.4byte	.LVL0
+ 993 0625 4D080000 		.4byte	0x84d
+ 994 0629 17       		.uleb128 0x17
+ 995 062a 0C000000 		.4byte	.LVL1
+ 996 062e 54080000 		.4byte	0x854
+ 997 0632 17       		.uleb128 0x17
+ 998 0633 10000000 		.4byte	.LVL2
+ 999 0637 60080000 		.4byte	0x860
+ 1000 063b 17       		.uleb128 0x17
+ 1001 063c 16000000 		.4byte	.LVL3
+ 1002 0640 68080000 		.4byte	0x868
+ 1003 0644 17       		.uleb128 0x17
+ 1004 0645 1A000000 		.4byte	.LVL4
+ 1005 0649 7E080000 		.4byte	0x87e
+ 1006 064d 18       		.uleb128 0x18
+ 1007 064e 20000000 		.4byte	.LVL5
+ 1008 0652 85080000 		.4byte	0x885
+ 1009 0656 60060000 		.4byte	0x660
+ 1010 065a 19       		.uleb128 0x19
+ 1011 065b 01       		.uleb128 0x1
+ 1012 065c 50       		.byte	0x50
+ 1013 065d 01       		.uleb128 0x1
+ 1014 065e 31       		.byte	0x31
+ 1015 065f 00       		.byte	0
+ 1016 0660 17       		.uleb128 0x17
+ 1017 0661 24000000 		.4byte	.LVL6
+ 1018 0665 96080000 		.4byte	0x896
+ 1019 0669 17       		.uleb128 0x17
+ 1020 066a 28000000 		.4byte	.LVL7
+ 1021 066e 9D080000 		.4byte	0x89d
+ 1022 0672 17       		.uleb128 0x17
+ 1023 0673 2C000000 		.4byte	.LVL8
+ 1024 0677 A4080000 		.4byte	0x8a4
+ 1025 067b 17       		.uleb128 0x17
+ 1026 067c 30000000 		.4byte	.LVL9
+ 1027 0680 AB080000 		.4byte	0x8ab
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 21
+
+
+ 1028 0684 00       		.byte	0
+ 1029 0685 1A       		.uleb128 0x1a
+ 1030 0686 AA000000 		.4byte	.LASF74
+ 1031 068a 01       		.byte	0x1
+ 1032 068b 12       		.byte	0x12
+ 1033 068c 68000000 		.4byte	0x68
+ 1034 0690 00000000 		.4byte	.LFB63
+ 1035 0694 A0000000 		.4byte	.LFE63-.LFB63
+ 1036 0698 01       		.uleb128 0x1
+ 1037 0699 9C       		.byte	0x9c
+ 1038 069a 20080000 		.4byte	0x820
+ 1039 069e 1B       		.uleb128 0x1b
+ 1040 069f 02010000 		.4byte	.LASF75
+ 1041 06a3 01       		.byte	0x1
+ 1042 06a4 15       		.byte	0x15
+ 1043 06a5 2C000000 		.4byte	0x2c
+ 1044 06a9 00       		.byte	0
+ 1045 06aa 1C       		.uleb128 0x1c
+ 1046 06ab 86000000 		.4byte	.LASF105
+ 1047 06af 01       		.byte	0x1
+ 1048 06b0 16       		.byte	0x16
+ 1049 06b1 20080000 		.4byte	0x820
+ 1050 06b5 1D       		.uleb128 0x1d
+ 1051 06b6 00000000 		.4byte	.LASF76
+ 1052 06ba 01       		.byte	0x1
+ 1053 06bb 17       		.byte	0x17
+ 1054 06bc 8C000000 		.4byte	0x8c
+ 1055 06c0 00000000 		.4byte	.LLST0
+ 1056 06c4 17       		.uleb128 0x17
+ 1057 06c5 06000000 		.4byte	.LVL10
+ 1058 06c9 0B060000 		.4byte	0x60b
+ 1059 06cd 18       		.uleb128 0x18
+ 1060 06ce 0E000000 		.4byte	.LVL12
+ 1061 06d2 B2080000 		.4byte	0x8b2
+ 1062 06d6 E0060000 		.4byte	0x6e0
+ 1063 06da 19       		.uleb128 0x19
+ 1064 06db 01       		.uleb128 0x1
+ 1065 06dc 50       		.byte	0x50
+ 1066 06dd 01       		.uleb128 0x1
+ 1067 06de 30       		.byte	0x30
+ 1068 06df 00       		.byte	0
+ 1069 06e0 18       		.uleb128 0x18
+ 1070 06e1 14000000 		.4byte	.LVL13
+ 1071 06e5 C3080000 		.4byte	0x8c3
+ 1072 06e9 F3060000 		.4byte	0x6f3
+ 1073 06ed 19       		.uleb128 0x19
+ 1074 06ee 01       		.uleb128 0x1
+ 1075 06ef 50       		.byte	0x50
+ 1076 06f0 01       		.uleb128 0x1
+ 1077 06f1 30       		.byte	0x30
+ 1078 06f2 00       		.byte	0
+ 1079 06f3 18       		.uleb128 0x18
+ 1080 06f4 1E000000 		.4byte	.LVL14
+ 1081 06f8 D8080000 		.4byte	0x8d8
+ 1082 06fc 0B070000 		.4byte	0x70b
+ 1083 0700 19       		.uleb128 0x19
+ 1084 0701 01       		.uleb128 0x1
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 22
+
+
+ 1085 0702 51       		.byte	0x51
+ 1086 0703 01       		.uleb128 0x1
+ 1087 0704 30       		.byte	0x30
+ 1088 0705 19       		.uleb128 0x19
+ 1089 0706 01       		.uleb128 0x1
+ 1090 0707 50       		.byte	0x50
+ 1091 0708 01       		.uleb128 0x1
+ 1092 0709 30       		.byte	0x30
+ 1093 070a 00       		.byte	0
+ 1094 070b 18       		.uleb128 0x18
+ 1095 070c 24000000 		.4byte	.LVL15
+ 1096 0710 85080000 		.4byte	0x885
+ 1097 0714 1E070000 		.4byte	0x71e
+ 1098 0718 19       		.uleb128 0x19
+ 1099 0719 01       		.uleb128 0x1
+ 1100 071a 50       		.byte	0x50
+ 1101 071b 01       		.uleb128 0x1
+ 1102 071c 31       		.byte	0x31
+ 1103 071d 00       		.byte	0
+ 1104 071e 17       		.uleb128 0x17
+ 1105 071f 28000000 		.4byte	.LVL16
+ 1106 0723 EE080000 		.4byte	0x8ee
+ 1107 0727 18       		.uleb128 0x18
+ 1108 0728 46000000 		.4byte	.LVL21
+ 1109 072c F9080000 		.4byte	0x8f9
+ 1110 0730 3B070000 		.4byte	0x73b
+ 1111 0734 19       		.uleb128 0x19
+ 1112 0735 01       		.uleb128 0x1
+ 1113 0736 50       		.byte	0x50
+ 1114 0737 02       		.uleb128 0x2
+ 1115 0738 74       		.byte	0x74
+ 1116 0739 00       		.sleb128 0
+ 1117 073a 00       		.byte	0
+ 1118 073b 18       		.uleb128 0x18
+ 1119 073c 4C000000 		.4byte	.LVL22
+ 1120 0740 0A090000 		.4byte	0x90a
+ 1121 0744 4F070000 		.4byte	0x74f
+ 1122 0748 19       		.uleb128 0x19
+ 1123 0749 01       		.uleb128 0x1
+ 1124 074a 50       		.byte	0x50
+ 1125 074b 02       		.uleb128 0x2
+ 1126 074c 08       		.byte	0x8
+ 1127 074d 64       		.byte	0x64
+ 1128 074e 00       		.byte	0
+ 1129 074f 17       		.uleb128 0x17
+ 1130 0750 50000000 		.4byte	.LVL23
+ 1131 0754 1B090000 		.4byte	0x91b
+ 1132 0758 18       		.uleb128 0x18
+ 1133 0759 58000000 		.4byte	.LVL24
+ 1134 075d 26090000 		.4byte	0x926
+ 1135 0761 6B070000 		.4byte	0x76b
+ 1136 0765 19       		.uleb128 0x19
+ 1137 0766 01       		.uleb128 0x1
+ 1138 0767 50       		.byte	0x50
+ 1139 0768 01       		.uleb128 0x1
+ 1140 0769 31       		.byte	0x31
+ 1141 076a 00       		.byte	0
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 23
+
+
+ 1142 076b 18       		.uleb128 0x18
+ 1143 076c 5E000000 		.4byte	.LVL25
+ 1144 0770 37090000 		.4byte	0x937
+ 1145 0774 7E070000 		.4byte	0x77e
+ 1146 0778 19       		.uleb128 0x19
+ 1147 0779 01       		.uleb128 0x1
+ 1148 077a 50       		.byte	0x50
+ 1149 077b 01       		.uleb128 0x1
+ 1150 077c 31       		.byte	0x31
+ 1151 077d 00       		.byte	0
+ 1152 077e 18       		.uleb128 0x18
+ 1153 077f 64000000 		.4byte	.LVL26
+ 1154 0783 48090000 		.4byte	0x948
+ 1155 0787 91070000 		.4byte	0x791
+ 1156 078b 19       		.uleb128 0x19
+ 1157 078c 01       		.uleb128 0x1
+ 1158 078d 50       		.byte	0x50
+ 1159 078e 01       		.uleb128 0x1
+ 1160 078f 31       		.byte	0x31
+ 1161 0790 00       		.byte	0
+ 1162 0791 18       		.uleb128 0x18
+ 1163 0792 6A000000 		.4byte	.LVL27
+ 1164 0796 59090000 		.4byte	0x959
+ 1165 079a A5070000 		.4byte	0x7a5
+ 1166 079e 19       		.uleb128 0x19
+ 1167 079f 01       		.uleb128 0x1
+ 1168 07a0 50       		.byte	0x50
+ 1169 07a1 02       		.uleb128 0x2
+ 1170 07a2 74       		.byte	0x74
+ 1171 07a3 00       		.sleb128 0
+ 1172 07a4 00       		.byte	0
+ 1173 07a5 18       		.uleb128 0x18
+ 1174 07a6 74000000 		.4byte	.LVL28
+ 1175 07aa 6A090000 		.4byte	0x96a
+ 1176 07ae C8070000 		.4byte	0x7c8
+ 1177 07b2 19       		.uleb128 0x19
+ 1178 07b3 01       		.uleb128 0x1
+ 1179 07b4 52       		.byte	0x52
+ 1180 07b5 02       		.uleb128 0x2
+ 1181 07b6 08       		.byte	0x8
+ 1182 07b7 32       		.byte	0x32
+ 1183 07b8 19       		.uleb128 0x19
+ 1184 07b9 01       		.uleb128 0x1
+ 1185 07ba 51       		.byte	0x51
+ 1186 07bb 02       		.uleb128 0x2
+ 1187 07bc 08       		.byte	0x8
+ 1188 07bd 32       		.byte	0x32
+ 1189 07be 19       		.uleb128 0x19
+ 1190 07bf 01       		.uleb128 0x1
+ 1191 07c0 50       		.byte	0x50
+ 1192 07c1 05       		.uleb128 0x5
+ 1193 07c2 03       		.byte	0x3
+ 1194 07c3 00000000 		.4byte	.LC0
+ 1195 07c7 00       		.byte	0
+ 1196 07c8 17       		.uleb128 0x17
+ 1197 07c9 78000000 		.4byte	.LVL29
+ 1198 07cd 86090000 		.4byte	0x986
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 24
+
+
+ 1199 07d1 17       		.uleb128 0x17
+ 1200 07d2 80000000 		.4byte	.LVL30
+ 1201 07d6 26090000 		.4byte	0x926
+ 1202 07da 18       		.uleb128 0x18
+ 1203 07db 86000000 		.4byte	.LVL31
+ 1204 07df 37090000 		.4byte	0x937
+ 1205 07e3 ED070000 		.4byte	0x7ed
+ 1206 07e7 19       		.uleb128 0x19
+ 1207 07e8 01       		.uleb128 0x1
+ 1208 07e9 50       		.byte	0x50
+ 1209 07ea 01       		.uleb128 0x1
+ 1210 07eb 30       		.byte	0x30
+ 1211 07ec 00       		.byte	0
+ 1212 07ed 18       		.uleb128 0x18
+ 1213 07ee 8C000000 		.4byte	.LVL32
+ 1214 07f2 48090000 		.4byte	0x948
+ 1215 07f6 00080000 		.4byte	0x800
+ 1216 07fa 19       		.uleb128 0x19
+ 1217 07fb 01       		.uleb128 0x1
+ 1218 07fc 50       		.byte	0x50
+ 1219 07fd 01       		.uleb128 0x1
+ 1220 07fe 30       		.byte	0x30
+ 1221 07ff 00       		.byte	0
+ 1222 0800 1E       		.uleb128 0x1e
+ 1223 0801 96000000 		.4byte	.LVL33
+ 1224 0805 6A090000 		.4byte	0x96a
+ 1225 0809 19       		.uleb128 0x19
+ 1226 080a 01       		.uleb128 0x1
+ 1227 080b 52       		.byte	0x52
+ 1228 080c 02       		.uleb128 0x2
+ 1229 080d 08       		.byte	0x8
+ 1230 080e 32       		.byte	0x32
+ 1231 080f 19       		.uleb128 0x19
+ 1232 0810 01       		.uleb128 0x1
+ 1233 0811 51       		.byte	0x51
+ 1234 0812 02       		.uleb128 0x2
+ 1235 0813 08       		.byte	0x8
+ 1236 0814 32       		.byte	0x32
+ 1237 0815 19       		.uleb128 0x19
+ 1238 0816 01       		.uleb128 0x1
+ 1239 0817 50       		.byte	0x50
+ 1240 0818 05       		.uleb128 0x5
+ 1241 0819 03       		.byte	0x3
+ 1242 081a 0C000000 		.4byte	.LC1
+ 1243 081e 00       		.byte	0
+ 1244 081f 00       		.byte	0
+ 1245 0820 1F       		.uleb128 0x1f
+ 1246 0821 68000000 		.4byte	0x68
+ 1247 0825 30080000 		.4byte	0x830
+ 1248 0829 20       		.uleb128 0x20
+ 1249 082a C2000000 		.4byte	0xc2
+ 1250 082e 63       		.byte	0x63
+ 1251 082f 00       		.byte	0
+ 1252 0830 21       		.uleb128 0x21
+ 1253 0831 6C050000 		.4byte	.LASF77
+ 1254 0835 06       		.byte	0x6
+ 1255 0836 2A06     		.2byte	0x62a
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 25
+
+
+ 1256 0838 3C080000 		.4byte	0x83c
+ 1257 083c 22       		.uleb128 0x22
+ 1258 083d 76000000 		.4byte	0x76
+ 1259 0841 21       		.uleb128 0x21
+ 1260 0842 3C050000 		.4byte	.LASF78
+ 1261 0846 07       		.byte	0x7
+ 1262 0847 2108     		.2byte	0x821
+ 1263 0849 36050000 		.4byte	0x536
+ 1264 084d 23       		.uleb128 0x23
+ 1265 084e 5F050000 		.4byte	.LASF79
+ 1266 0852 08       		.byte	0x8
+ 1267 0853 53       		.byte	0x53
+ 1268 0854 24       		.uleb128 0x24
+ 1269 0855 CA000000 		.4byte	.LASF91
+ 1270 0859 07       		.byte	0x7
+ 1271 085a 6D01     		.2byte	0x16d
+ 1272 085c 68000000 		.4byte	0x68
+ 1273 0860 25       		.uleb128 0x25
+ 1274 0861 B1050000 		.4byte	.LASF80
+ 1275 0865 07       		.byte	0x7
+ 1276 0866 F601     		.2byte	0x1f6
+ 1277 0868 26       		.uleb128 0x26
+ 1278 0869 0D040000 		.4byte	.LASF88
+ 1279 086d 07       		.byte	0x7
+ 1280 086e 2B03     		.2byte	0x32b
+ 1281 0870 30050000 		.4byte	0x530
+ 1282 0874 7E080000 		.4byte	0x87e
+ 1283 0878 0E       		.uleb128 0xe
+ 1284 0879 30050000 		.4byte	0x530
+ 1285 087d 00       		.byte	0
+ 1286 087e 23       		.uleb128 0x23
+ 1287 087f D3000000 		.4byte	.LASF81
+ 1288 0883 09       		.byte	0x9
+ 1289 0884 38       		.byte	0x38
+ 1290 0885 27       		.uleb128 0x27
+ 1291 0886 BE030000 		.4byte	.LASF86
+ 1292 088a 09       		.byte	0x9
+ 1293 088b 3A       		.byte	0x3a
+ 1294 088c 96080000 		.4byte	0x896
+ 1295 0890 0E       		.uleb128 0xe
+ 1296 0891 81000000 		.4byte	0x81
+ 1297 0895 00       		.byte	0
+ 1298 0896 23       		.uleb128 0x23
+ 1299 0897 BB050000 		.4byte	.LASF82
+ 1300 089b 0A       		.byte	0xa
+ 1301 089c 3A       		.byte	0x3a
+ 1302 089d 23       		.uleb128 0x23
+ 1303 089e 54020000 		.4byte	.LASF83
+ 1304 08a2 0A       		.byte	0xa
+ 1305 08a3 3D       		.byte	0x3d
+ 1306 08a4 23       		.uleb128 0x23
+ 1307 08a5 64030000 		.4byte	.LASF84
+ 1308 08a9 0B       		.byte	0xb
+ 1309 08aa 1E       		.byte	0x1e
+ 1310 08ab 23       		.uleb128 0x23
+ 1311 08ac EB040000 		.4byte	.LASF85
+ 1312 08b0 0C       		.byte	0xc
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 26
+
+
+ 1313 08b1 33       		.byte	0x33
+ 1314 08b2 27       		.uleb128 0x27
+ 1315 08b3 A1010000 		.4byte	.LASF87
+ 1316 08b7 0B       		.byte	0xb
+ 1317 08b8 50       		.byte	0x50
+ 1318 08b9 C3080000 		.4byte	0x8c3
+ 1319 08bd 0E       		.uleb128 0xe
+ 1320 08be 81000000 		.4byte	0x81
+ 1321 08c2 00       		.byte	0
+ 1322 08c3 28       		.uleb128 0x28
+ 1323 08c4 45010000 		.4byte	.LASF89
+ 1324 08c8 0A       		.byte	0xa
+ 1325 08c9 3F       		.byte	0x3f
+ 1326 08ca 81000000 		.4byte	0x81
+ 1327 08ce D8080000 		.4byte	0x8d8
+ 1328 08d2 0E       		.uleb128 0xe
+ 1329 08d3 81000000 		.4byte	0x81
+ 1330 08d7 00       		.byte	0
+ 1331 08d8 27       		.uleb128 0x27
+ 1332 08d9 8E020000 		.4byte	.LASF90
+ 1333 08dd 09       		.byte	0x9
+ 1334 08de 3D       		.byte	0x3d
+ 1335 08df EE080000 		.4byte	0x8ee
+ 1336 08e3 0E       		.uleb128 0xe
+ 1337 08e4 81000000 		.4byte	0x81
+ 1338 08e8 0E       		.uleb128 0xe
+ 1339 08e9 81000000 		.4byte	0x81
+ 1340 08ed 00       		.byte	0
+ 1341 08ee 29       		.uleb128 0x29
+ 1342 08ef E9000000 		.4byte	.LASF92
+ 1343 08f3 0A       		.byte	0xa
+ 1344 08f4 41       		.byte	0x41
+ 1345 08f5 A2000000 		.4byte	0xa2
+ 1346 08f9 27       		.uleb128 0x27
+ 1347 08fa 6E020000 		.4byte	.LASF93
+ 1348 08fe 09       		.byte	0x9
+ 1349 08ff 61       		.byte	0x61
+ 1350 0900 0A090000 		.4byte	0x90a
+ 1351 0904 0E       		.uleb128 0xe
+ 1352 0905 97000000 		.4byte	0x97
+ 1353 0909 00       		.byte	0
+ 1354 090a 27       		.uleb128 0x27
+ 1355 090b FB020000 		.4byte	.LASF94
+ 1356 090f 0D       		.byte	0xd
+ 1357 0910 77       		.byte	0x77
+ 1358 0911 1B090000 		.4byte	0x91b
+ 1359 0915 0E       		.uleb128 0xe
+ 1360 0916 97000000 		.4byte	0x97
+ 1361 091a 00       		.byte	0
+ 1362 091b 29       		.uleb128 0x29
+ 1363 091c 14050000 		.4byte	.LASF95
+ 1364 0920 0E       		.byte	0xe
+ 1365 0921 29       		.byte	0x29
+ 1366 0922 81000000 		.4byte	0x81
+ 1367 0926 27       		.uleb128 0x27
+ 1368 0927 10030000 		.4byte	.LASF96
+ 1369 092b 0F       		.byte	0xf
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 27
+
+
+ 1370 092c 26       		.byte	0x26
+ 1371 092d 37090000 		.4byte	0x937
+ 1372 0931 0E       		.uleb128 0xe
+ 1373 0932 81000000 		.4byte	0x81
+ 1374 0936 00       		.byte	0
+ 1375 0937 27       		.uleb128 0x27
+ 1376 0938 37000000 		.4byte	.LASF97
+ 1377 093c 10       		.byte	0x10
+ 1378 093d 26       		.byte	0x26
+ 1379 093e 48090000 		.4byte	0x948
+ 1380 0942 0E       		.uleb128 0xe
+ 1381 0943 81000000 		.4byte	0x81
+ 1382 0947 00       		.byte	0
+ 1383 0948 27       		.uleb128 0x27
+ 1384 0949 D6030000 		.4byte	.LASF98
+ 1385 094d 11       		.byte	0x11
+ 1386 094e 26       		.byte	0x26
+ 1387 094f 59090000 		.4byte	0x959
+ 1388 0953 0E       		.uleb128 0xe
+ 1389 0954 81000000 		.4byte	0x81
+ 1390 0958 00       		.byte	0
+ 1391 0959 27       		.uleb128 0x27
+ 1392 095a 9A050000 		.4byte	.LASF99
+ 1393 095e 0C       		.byte	0xc
+ 1394 095f 37       		.byte	0x37
+ 1395 0960 6A090000 		.4byte	0x96a
+ 1396 0964 0E       		.uleb128 0xe
+ 1397 0965 81000000 		.4byte	0x81
+ 1398 0969 00       		.byte	0
+ 1399 096a 2A       		.uleb128 0x2a
+ 1400 096b AD030000 		.4byte	.LASF100
+ 1401 096f 07       		.byte	0x7
+ 1402 0970 0503     		.2byte	0x305
+ 1403 0972 86090000 		.4byte	0x986
+ 1404 0976 0E       		.uleb128 0xe
+ 1405 0977 C9000000 		.4byte	0xc9
+ 1406 097b 0E       		.uleb128 0xe
+ 1407 097c 68000000 		.4byte	0x68
+ 1408 0980 0E       		.uleb128 0xe
+ 1409 0981 68000000 		.4byte	0x68
+ 1410 0985 00       		.byte	0
+ 1411 0986 29       		.uleb128 0x29
+ 1412 0987 71030000 		.4byte	.LASF101
+ 1413 098b 12       		.byte	0x12
+ 1414 098c 29       		.byte	0x29
+ 1415 098d 81000000 		.4byte	0x81
+ 1416 0991 00       		.byte	0
+ 1417              		.section	.debug_abbrev,"",%progbits
+ 1418              	.Ldebug_abbrev0:
+ 1419 0000 01       		.uleb128 0x1
+ 1420 0001 11       		.uleb128 0x11
+ 1421 0002 01       		.byte	0x1
+ 1422 0003 25       		.uleb128 0x25
+ 1423 0004 0E       		.uleb128 0xe
+ 1424 0005 13       		.uleb128 0x13
+ 1425 0006 0B       		.uleb128 0xb
+ 1426 0007 03       		.uleb128 0x3
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 28
+
+
+ 1427 0008 0E       		.uleb128 0xe
+ 1428 0009 1B       		.uleb128 0x1b
+ 1429 000a 0E       		.uleb128 0xe
+ 1430 000b 55       		.uleb128 0x55
+ 1431 000c 17       		.uleb128 0x17
+ 1432 000d 11       		.uleb128 0x11
+ 1433 000e 01       		.uleb128 0x1
+ 1434 000f 10       		.uleb128 0x10
+ 1435 0010 17       		.uleb128 0x17
+ 1436 0011 00       		.byte	0
+ 1437 0012 00       		.byte	0
+ 1438 0013 02       		.uleb128 0x2
+ 1439 0014 24       		.uleb128 0x24
+ 1440 0015 00       		.byte	0
+ 1441 0016 0B       		.uleb128 0xb
+ 1442 0017 0B       		.uleb128 0xb
+ 1443 0018 3E       		.uleb128 0x3e
+ 1444 0019 0B       		.uleb128 0xb
+ 1445 001a 03       		.uleb128 0x3
+ 1446 001b 0E       		.uleb128 0xe
+ 1447 001c 00       		.byte	0
+ 1448 001d 00       		.byte	0
+ 1449 001e 03       		.uleb128 0x3
+ 1450 001f 16       		.uleb128 0x16
+ 1451 0020 00       		.byte	0
+ 1452 0021 03       		.uleb128 0x3
+ 1453 0022 0E       		.uleb128 0xe
+ 1454 0023 3A       		.uleb128 0x3a
+ 1455 0024 0B       		.uleb128 0xb
+ 1456 0025 3B       		.uleb128 0x3b
+ 1457 0026 0B       		.uleb128 0xb
+ 1458 0027 49       		.uleb128 0x49
+ 1459 0028 13       		.uleb128 0x13
+ 1460 0029 00       		.byte	0
+ 1461 002a 00       		.byte	0
+ 1462 002b 04       		.uleb128 0x4
+ 1463 002c 24       		.uleb128 0x24
+ 1464 002d 00       		.byte	0
+ 1465 002e 0B       		.uleb128 0xb
+ 1466 002f 0B       		.uleb128 0xb
+ 1467 0030 3E       		.uleb128 0x3e
+ 1468 0031 0B       		.uleb128 0xb
+ 1469 0032 03       		.uleb128 0x3
+ 1470 0033 08       		.uleb128 0x8
+ 1471 0034 00       		.byte	0
+ 1472 0035 00       		.byte	0
+ 1473 0036 05       		.uleb128 0x5
+ 1474 0037 0F       		.uleb128 0xf
+ 1475 0038 00       		.byte	0
+ 1476 0039 0B       		.uleb128 0xb
+ 1477 003a 0B       		.uleb128 0xb
+ 1478 003b 49       		.uleb128 0x49
+ 1479 003c 13       		.uleb128 0x13
+ 1480 003d 00       		.byte	0
+ 1481 003e 00       		.byte	0
+ 1482 003f 06       		.uleb128 0x6
+ 1483 0040 26       		.uleb128 0x26
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 29
+
+
+ 1484 0041 00       		.byte	0
+ 1485 0042 49       		.uleb128 0x49
+ 1486 0043 13       		.uleb128 0x13
+ 1487 0044 00       		.byte	0
+ 1488 0045 00       		.byte	0
+ 1489 0046 07       		.uleb128 0x7
+ 1490 0047 26       		.uleb128 0x26
+ 1491 0048 00       		.byte	0
+ 1492 0049 00       		.byte	0
+ 1493 004a 00       		.byte	0
+ 1494 004b 08       		.uleb128 0x8
+ 1495 004c 13       		.uleb128 0x13
+ 1496 004d 01       		.byte	0x1
+ 1497 004e 0B       		.uleb128 0xb
+ 1498 004f 0B       		.uleb128 0xb
+ 1499 0050 3A       		.uleb128 0x3a
+ 1500 0051 0B       		.uleb128 0xb
+ 1501 0052 3B       		.uleb128 0x3b
+ 1502 0053 0B       		.uleb128 0xb
+ 1503 0054 01       		.uleb128 0x1
+ 1504 0055 13       		.uleb128 0x13
+ 1505 0056 00       		.byte	0
+ 1506 0057 00       		.byte	0
+ 1507 0058 09       		.uleb128 0x9
+ 1508 0059 0D       		.uleb128 0xd
+ 1509 005a 00       		.byte	0
+ 1510 005b 03       		.uleb128 0x3
+ 1511 005c 08       		.uleb128 0x8
+ 1512 005d 3A       		.uleb128 0x3a
+ 1513 005e 0B       		.uleb128 0xb
+ 1514 005f 3B       		.uleb128 0x3b
+ 1515 0060 0B       		.uleb128 0xb
+ 1516 0061 49       		.uleb128 0x49
+ 1517 0062 13       		.uleb128 0x13
+ 1518 0063 38       		.uleb128 0x38
+ 1519 0064 0B       		.uleb128 0xb
+ 1520 0065 00       		.byte	0
+ 1521 0066 00       		.byte	0
+ 1522 0067 0A       		.uleb128 0xa
+ 1523 0068 0D       		.uleb128 0xd
+ 1524 0069 00       		.byte	0
+ 1525 006a 03       		.uleb128 0x3
+ 1526 006b 0E       		.uleb128 0xe
+ 1527 006c 3A       		.uleb128 0x3a
+ 1528 006d 0B       		.uleb128 0xb
+ 1529 006e 3B       		.uleb128 0x3b
+ 1530 006f 0B       		.uleb128 0xb
+ 1531 0070 49       		.uleb128 0x49
+ 1532 0071 13       		.uleb128 0x13
+ 1533 0072 38       		.uleb128 0x38
+ 1534 0073 0B       		.uleb128 0xb
+ 1535 0074 00       		.byte	0
+ 1536 0075 00       		.byte	0
+ 1537 0076 0B       		.uleb128 0xb
+ 1538 0077 13       		.uleb128 0x13
+ 1539 0078 01       		.byte	0x1
+ 1540 0079 03       		.uleb128 0x3
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 30
+
+
+ 1541 007a 0E       		.uleb128 0xe
+ 1542 007b 0B       		.uleb128 0xb
+ 1543 007c 0B       		.uleb128 0xb
+ 1544 007d 3A       		.uleb128 0x3a
+ 1545 007e 0B       		.uleb128 0xb
+ 1546 007f 3B       		.uleb128 0x3b
+ 1547 0080 0B       		.uleb128 0xb
+ 1548 0081 01       		.uleb128 0x1
+ 1549 0082 13       		.uleb128 0x13
+ 1550 0083 00       		.byte	0
+ 1551 0084 00       		.byte	0
+ 1552 0085 0C       		.uleb128 0xc
+ 1553 0086 16       		.uleb128 0x16
+ 1554 0087 00       		.byte	0
+ 1555 0088 03       		.uleb128 0x3
+ 1556 0089 0E       		.uleb128 0xe
+ 1557 008a 3A       		.uleb128 0x3a
+ 1558 008b 0B       		.uleb128 0xb
+ 1559 008c 3B       		.uleb128 0x3b
+ 1560 008d 05       		.uleb128 0x5
+ 1561 008e 49       		.uleb128 0x49
+ 1562 008f 13       		.uleb128 0x13
+ 1563 0090 00       		.byte	0
+ 1564 0091 00       		.byte	0
+ 1565 0092 0D       		.uleb128 0xd
+ 1566 0093 15       		.uleb128 0x15
+ 1567 0094 01       		.byte	0x1
+ 1568 0095 27       		.uleb128 0x27
+ 1569 0096 19       		.uleb128 0x19
+ 1570 0097 49       		.uleb128 0x49
+ 1571 0098 13       		.uleb128 0x13
+ 1572 0099 01       		.uleb128 0x1
+ 1573 009a 13       		.uleb128 0x13
+ 1574 009b 00       		.byte	0
+ 1575 009c 00       		.byte	0
+ 1576 009d 0E       		.uleb128 0xe
+ 1577 009e 05       		.uleb128 0x5
+ 1578 009f 00       		.byte	0
+ 1579 00a0 49       		.uleb128 0x49
+ 1580 00a1 13       		.uleb128 0x13
+ 1581 00a2 00       		.byte	0
+ 1582 00a3 00       		.byte	0
+ 1583 00a4 0F       		.uleb128 0xf
+ 1584 00a5 15       		.uleb128 0x15
+ 1585 00a6 01       		.byte	0x1
+ 1586 00a7 27       		.uleb128 0x27
+ 1587 00a8 19       		.uleb128 0x19
+ 1588 00a9 01       		.uleb128 0x1
+ 1589 00aa 13       		.uleb128 0x13
+ 1590 00ab 00       		.byte	0
+ 1591 00ac 00       		.byte	0
+ 1592 00ad 10       		.uleb128 0x10
+ 1593 00ae 13       		.uleb128 0x13
+ 1594 00af 01       		.byte	0x1
+ 1595 00b0 0B       		.uleb128 0xb
+ 1596 00b1 0B       		.uleb128 0xb
+ 1597 00b2 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 31
+
+
+ 1598 00b3 0B       		.uleb128 0xb
+ 1599 00b4 3B       		.uleb128 0x3b
+ 1600 00b5 05       		.uleb128 0x5
+ 1601 00b6 01       		.uleb128 0x1
+ 1602 00b7 13       		.uleb128 0x13
+ 1603 00b8 00       		.byte	0
+ 1604 00b9 00       		.byte	0
+ 1605 00ba 11       		.uleb128 0x11
+ 1606 00bb 0D       		.uleb128 0xd
+ 1607 00bc 00       		.byte	0
+ 1608 00bd 03       		.uleb128 0x3
+ 1609 00be 0E       		.uleb128 0xe
+ 1610 00bf 3A       		.uleb128 0x3a
+ 1611 00c0 0B       		.uleb128 0xb
+ 1612 00c1 3B       		.uleb128 0x3b
+ 1613 00c2 05       		.uleb128 0x5
+ 1614 00c3 49       		.uleb128 0x49
+ 1615 00c4 13       		.uleb128 0x13
+ 1616 00c5 38       		.uleb128 0x38
+ 1617 00c6 0B       		.uleb128 0xb
+ 1618 00c7 00       		.byte	0
+ 1619 00c8 00       		.byte	0
+ 1620 00c9 12       		.uleb128 0x12
+ 1621 00ca 13       		.uleb128 0x13
+ 1622 00cb 01       		.byte	0x1
+ 1623 00cc 03       		.uleb128 0x3
+ 1624 00cd 0E       		.uleb128 0xe
+ 1625 00ce 0B       		.uleb128 0xb
+ 1626 00cf 0B       		.uleb128 0xb
+ 1627 00d0 3A       		.uleb128 0x3a
+ 1628 00d1 0B       		.uleb128 0xb
+ 1629 00d2 3B       		.uleb128 0x3b
+ 1630 00d3 05       		.uleb128 0x5
+ 1631 00d4 01       		.uleb128 0x1
+ 1632 00d5 13       		.uleb128 0x13
+ 1633 00d6 00       		.byte	0
+ 1634 00d7 00       		.byte	0
+ 1635 00d8 13       		.uleb128 0x13
+ 1636 00d9 0D       		.uleb128 0xd
+ 1637 00da 00       		.byte	0
+ 1638 00db 03       		.uleb128 0x3
+ 1639 00dc 08       		.uleb128 0x8
+ 1640 00dd 3A       		.uleb128 0x3a
+ 1641 00de 0B       		.uleb128 0xb
+ 1642 00df 3B       		.uleb128 0x3b
+ 1643 00e0 05       		.uleb128 0x5
+ 1644 00e1 49       		.uleb128 0x49
+ 1645 00e2 13       		.uleb128 0x13
+ 1646 00e3 38       		.uleb128 0x38
+ 1647 00e4 0B       		.uleb128 0xb
+ 1648 00e5 00       		.byte	0
+ 1649 00e6 00       		.byte	0
+ 1650 00e7 14       		.uleb128 0x14
+ 1651 00e8 17       		.uleb128 0x17
+ 1652 00e9 01       		.byte	0x1
+ 1653 00ea 0B       		.uleb128 0xb
+ 1654 00eb 0B       		.uleb128 0xb
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 32
+
+
+ 1655 00ec 3A       		.uleb128 0x3a
+ 1656 00ed 0B       		.uleb128 0xb
+ 1657 00ee 3B       		.uleb128 0x3b
+ 1658 00ef 05       		.uleb128 0x5
+ 1659 00f0 01       		.uleb128 0x1
+ 1660 00f1 13       		.uleb128 0x13
+ 1661 00f2 00       		.byte	0
+ 1662 00f3 00       		.byte	0
+ 1663 00f4 15       		.uleb128 0x15
+ 1664 00f5 0D       		.uleb128 0xd
+ 1665 00f6 00       		.byte	0
+ 1666 00f7 03       		.uleb128 0x3
+ 1667 00f8 0E       		.uleb128 0xe
+ 1668 00f9 3A       		.uleb128 0x3a
+ 1669 00fa 0B       		.uleb128 0xb
+ 1670 00fb 3B       		.uleb128 0x3b
+ 1671 00fc 05       		.uleb128 0x5
+ 1672 00fd 49       		.uleb128 0x49
+ 1673 00fe 13       		.uleb128 0x13
+ 1674 00ff 00       		.byte	0
+ 1675 0100 00       		.byte	0
+ 1676 0101 16       		.uleb128 0x16
+ 1677 0102 2E       		.uleb128 0x2e
+ 1678 0103 01       		.byte	0x1
+ 1679 0104 3F       		.uleb128 0x3f
+ 1680 0105 19       		.uleb128 0x19
+ 1681 0106 03       		.uleb128 0x3
+ 1682 0107 0E       		.uleb128 0xe
+ 1683 0108 3A       		.uleb128 0x3a
+ 1684 0109 0B       		.uleb128 0xb
+ 1685 010a 3B       		.uleb128 0x3b
+ 1686 010b 0B       		.uleb128 0xb
+ 1687 010c 27       		.uleb128 0x27
+ 1688 010d 19       		.uleb128 0x19
+ 1689 010e 11       		.uleb128 0x11
+ 1690 010f 01       		.uleb128 0x1
+ 1691 0110 12       		.uleb128 0x12
+ 1692 0111 06       		.uleb128 0x6
+ 1693 0112 40       		.uleb128 0x40
+ 1694 0113 18       		.uleb128 0x18
+ 1695 0114 9742     		.uleb128 0x2117
+ 1696 0116 19       		.uleb128 0x19
+ 1697 0117 01       		.uleb128 0x1
+ 1698 0118 13       		.uleb128 0x13
+ 1699 0119 00       		.byte	0
+ 1700 011a 00       		.byte	0
+ 1701 011b 17       		.uleb128 0x17
+ 1702 011c 898201   		.uleb128 0x4109
+ 1703 011f 00       		.byte	0
+ 1704 0120 11       		.uleb128 0x11
+ 1705 0121 01       		.uleb128 0x1
+ 1706 0122 31       		.uleb128 0x31
+ 1707 0123 13       		.uleb128 0x13
+ 1708 0124 00       		.byte	0
+ 1709 0125 00       		.byte	0
+ 1710 0126 18       		.uleb128 0x18
+ 1711 0127 898201   		.uleb128 0x4109
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 33
+
+
+ 1712 012a 01       		.byte	0x1
+ 1713 012b 11       		.uleb128 0x11
+ 1714 012c 01       		.uleb128 0x1
+ 1715 012d 31       		.uleb128 0x31
+ 1716 012e 13       		.uleb128 0x13
+ 1717 012f 01       		.uleb128 0x1
+ 1718 0130 13       		.uleb128 0x13
+ 1719 0131 00       		.byte	0
+ 1720 0132 00       		.byte	0
+ 1721 0133 19       		.uleb128 0x19
+ 1722 0134 8A8201   		.uleb128 0x410a
+ 1723 0137 00       		.byte	0
+ 1724 0138 02       		.uleb128 0x2
+ 1725 0139 18       		.uleb128 0x18
+ 1726 013a 9142     		.uleb128 0x2111
+ 1727 013c 18       		.uleb128 0x18
+ 1728 013d 00       		.byte	0
+ 1729 013e 00       		.byte	0
+ 1730 013f 1A       		.uleb128 0x1a
+ 1731 0140 2E       		.uleb128 0x2e
+ 1732 0141 01       		.byte	0x1
+ 1733 0142 3F       		.uleb128 0x3f
+ 1734 0143 19       		.uleb128 0x19
+ 1735 0144 03       		.uleb128 0x3
+ 1736 0145 0E       		.uleb128 0xe
+ 1737 0146 3A       		.uleb128 0x3a
+ 1738 0147 0B       		.uleb128 0xb
+ 1739 0148 3B       		.uleb128 0x3b
+ 1740 0149 0B       		.uleb128 0xb
+ 1741 014a 49       		.uleb128 0x49
+ 1742 014b 13       		.uleb128 0x13
+ 1743 014c 11       		.uleb128 0x11
+ 1744 014d 01       		.uleb128 0x1
+ 1745 014e 12       		.uleb128 0x12
+ 1746 014f 06       		.uleb128 0x6
+ 1747 0150 40       		.uleb128 0x40
+ 1748 0151 18       		.uleb128 0x18
+ 1749 0152 9742     		.uleb128 0x2117
+ 1750 0154 19       		.uleb128 0x19
+ 1751 0155 01       		.uleb128 0x1
+ 1752 0156 13       		.uleb128 0x13
+ 1753 0157 00       		.byte	0
+ 1754 0158 00       		.byte	0
+ 1755 0159 1B       		.uleb128 0x1b
+ 1756 015a 34       		.uleb128 0x34
+ 1757 015b 00       		.byte	0
+ 1758 015c 03       		.uleb128 0x3
+ 1759 015d 0E       		.uleb128 0xe
+ 1760 015e 3A       		.uleb128 0x3a
+ 1761 015f 0B       		.uleb128 0xb
+ 1762 0160 3B       		.uleb128 0x3b
+ 1763 0161 0B       		.uleb128 0xb
+ 1764 0162 49       		.uleb128 0x49
+ 1765 0163 13       		.uleb128 0x13
+ 1766 0164 1C       		.uleb128 0x1c
+ 1767 0165 0B       		.uleb128 0xb
+ 1768 0166 00       		.byte	0
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 34
+
+
+ 1769 0167 00       		.byte	0
+ 1770 0168 1C       		.uleb128 0x1c
+ 1771 0169 34       		.uleb128 0x34
+ 1772 016a 00       		.byte	0
+ 1773 016b 03       		.uleb128 0x3
+ 1774 016c 0E       		.uleb128 0xe
+ 1775 016d 3A       		.uleb128 0x3a
+ 1776 016e 0B       		.uleb128 0xb
+ 1777 016f 3B       		.uleb128 0x3b
+ 1778 0170 0B       		.uleb128 0xb
+ 1779 0171 49       		.uleb128 0x49
+ 1780 0172 13       		.uleb128 0x13
+ 1781 0173 00       		.byte	0
+ 1782 0174 00       		.byte	0
+ 1783 0175 1D       		.uleb128 0x1d
+ 1784 0176 34       		.uleb128 0x34
+ 1785 0177 00       		.byte	0
+ 1786 0178 03       		.uleb128 0x3
+ 1787 0179 0E       		.uleb128 0xe
+ 1788 017a 3A       		.uleb128 0x3a
+ 1789 017b 0B       		.uleb128 0xb
+ 1790 017c 3B       		.uleb128 0x3b
+ 1791 017d 0B       		.uleb128 0xb
+ 1792 017e 49       		.uleb128 0x49
+ 1793 017f 13       		.uleb128 0x13
+ 1794 0180 02       		.uleb128 0x2
+ 1795 0181 17       		.uleb128 0x17
+ 1796 0182 00       		.byte	0
+ 1797 0183 00       		.byte	0
+ 1798 0184 1E       		.uleb128 0x1e
+ 1799 0185 898201   		.uleb128 0x4109
+ 1800 0188 01       		.byte	0x1
+ 1801 0189 11       		.uleb128 0x11
+ 1802 018a 01       		.uleb128 0x1
+ 1803 018b 31       		.uleb128 0x31
+ 1804 018c 13       		.uleb128 0x13
+ 1805 018d 00       		.byte	0
+ 1806 018e 00       		.byte	0
+ 1807 018f 1F       		.uleb128 0x1f
+ 1808 0190 01       		.uleb128 0x1
+ 1809 0191 01       		.byte	0x1
+ 1810 0192 49       		.uleb128 0x49
+ 1811 0193 13       		.uleb128 0x13
+ 1812 0194 01       		.uleb128 0x1
+ 1813 0195 13       		.uleb128 0x13
+ 1814 0196 00       		.byte	0
+ 1815 0197 00       		.byte	0
+ 1816 0198 20       		.uleb128 0x20
+ 1817 0199 21       		.uleb128 0x21
+ 1818 019a 00       		.byte	0
+ 1819 019b 49       		.uleb128 0x49
+ 1820 019c 13       		.uleb128 0x13
+ 1821 019d 2F       		.uleb128 0x2f
+ 1822 019e 0B       		.uleb128 0xb
+ 1823 019f 00       		.byte	0
+ 1824 01a0 00       		.byte	0
+ 1825 01a1 21       		.uleb128 0x21
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 35
+
+
+ 1826 01a2 34       		.uleb128 0x34
+ 1827 01a3 00       		.byte	0
+ 1828 01a4 03       		.uleb128 0x3
+ 1829 01a5 0E       		.uleb128 0xe
+ 1830 01a6 3A       		.uleb128 0x3a
+ 1831 01a7 0B       		.uleb128 0xb
+ 1832 01a8 3B       		.uleb128 0x3b
+ 1833 01a9 05       		.uleb128 0x5
+ 1834 01aa 49       		.uleb128 0x49
+ 1835 01ab 13       		.uleb128 0x13
+ 1836 01ac 3F       		.uleb128 0x3f
+ 1837 01ad 19       		.uleb128 0x19
+ 1838 01ae 3C       		.uleb128 0x3c
+ 1839 01af 19       		.uleb128 0x19
+ 1840 01b0 00       		.byte	0
+ 1841 01b1 00       		.byte	0
+ 1842 01b2 22       		.uleb128 0x22
+ 1843 01b3 35       		.uleb128 0x35
+ 1844 01b4 00       		.byte	0
+ 1845 01b5 49       		.uleb128 0x49
+ 1846 01b6 13       		.uleb128 0x13
+ 1847 01b7 00       		.byte	0
+ 1848 01b8 00       		.byte	0
+ 1849 01b9 23       		.uleb128 0x23
+ 1850 01ba 2E       		.uleb128 0x2e
+ 1851 01bb 00       		.byte	0
+ 1852 01bc 3F       		.uleb128 0x3f
+ 1853 01bd 19       		.uleb128 0x19
+ 1854 01be 03       		.uleb128 0x3
+ 1855 01bf 0E       		.uleb128 0xe
+ 1856 01c0 3A       		.uleb128 0x3a
+ 1857 01c1 0B       		.uleb128 0xb
+ 1858 01c2 3B       		.uleb128 0x3b
+ 1859 01c3 0B       		.uleb128 0xb
+ 1860 01c4 27       		.uleb128 0x27
+ 1861 01c5 19       		.uleb128 0x19
+ 1862 01c6 3C       		.uleb128 0x3c
+ 1863 01c7 19       		.uleb128 0x19
+ 1864 01c8 00       		.byte	0
+ 1865 01c9 00       		.byte	0
+ 1866 01ca 24       		.uleb128 0x24
+ 1867 01cb 2E       		.uleb128 0x2e
+ 1868 01cc 00       		.byte	0
+ 1869 01cd 3F       		.uleb128 0x3f
+ 1870 01ce 19       		.uleb128 0x19
+ 1871 01cf 03       		.uleb128 0x3
+ 1872 01d0 0E       		.uleb128 0xe
+ 1873 01d1 3A       		.uleb128 0x3a
+ 1874 01d2 0B       		.uleb128 0xb
+ 1875 01d3 3B       		.uleb128 0x3b
+ 1876 01d4 05       		.uleb128 0x5
+ 1877 01d5 27       		.uleb128 0x27
+ 1878 01d6 19       		.uleb128 0x19
+ 1879 01d7 49       		.uleb128 0x49
+ 1880 01d8 13       		.uleb128 0x13
+ 1881 01d9 3C       		.uleb128 0x3c
+ 1882 01da 19       		.uleb128 0x19
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 36
+
+
+ 1883 01db 00       		.byte	0
+ 1884 01dc 00       		.byte	0
+ 1885 01dd 25       		.uleb128 0x25
+ 1886 01de 2E       		.uleb128 0x2e
+ 1887 01df 00       		.byte	0
+ 1888 01e0 3F       		.uleb128 0x3f
+ 1889 01e1 19       		.uleb128 0x19
+ 1890 01e2 03       		.uleb128 0x3
+ 1891 01e3 0E       		.uleb128 0xe
+ 1892 01e4 3A       		.uleb128 0x3a
+ 1893 01e5 0B       		.uleb128 0xb
+ 1894 01e6 3B       		.uleb128 0x3b
+ 1895 01e7 05       		.uleb128 0x5
+ 1896 01e8 27       		.uleb128 0x27
+ 1897 01e9 19       		.uleb128 0x19
+ 1898 01ea 3C       		.uleb128 0x3c
+ 1899 01eb 19       		.uleb128 0x19
+ 1900 01ec 00       		.byte	0
+ 1901 01ed 00       		.byte	0
+ 1902 01ee 26       		.uleb128 0x26
+ 1903 01ef 2E       		.uleb128 0x2e
+ 1904 01f0 01       		.byte	0x1
+ 1905 01f1 3F       		.uleb128 0x3f
+ 1906 01f2 19       		.uleb128 0x19
+ 1907 01f3 03       		.uleb128 0x3
+ 1908 01f4 0E       		.uleb128 0xe
+ 1909 01f5 3A       		.uleb128 0x3a
+ 1910 01f6 0B       		.uleb128 0xb
+ 1911 01f7 3B       		.uleb128 0x3b
+ 1912 01f8 05       		.uleb128 0x5
+ 1913 01f9 27       		.uleb128 0x27
+ 1914 01fa 19       		.uleb128 0x19
+ 1915 01fb 49       		.uleb128 0x49
+ 1916 01fc 13       		.uleb128 0x13
+ 1917 01fd 3C       		.uleb128 0x3c
+ 1918 01fe 19       		.uleb128 0x19
+ 1919 01ff 01       		.uleb128 0x1
+ 1920 0200 13       		.uleb128 0x13
+ 1921 0201 00       		.byte	0
+ 1922 0202 00       		.byte	0
+ 1923 0203 27       		.uleb128 0x27
+ 1924 0204 2E       		.uleb128 0x2e
+ 1925 0205 01       		.byte	0x1
+ 1926 0206 3F       		.uleb128 0x3f
+ 1927 0207 19       		.uleb128 0x19
+ 1928 0208 03       		.uleb128 0x3
+ 1929 0209 0E       		.uleb128 0xe
+ 1930 020a 3A       		.uleb128 0x3a
+ 1931 020b 0B       		.uleb128 0xb
+ 1932 020c 3B       		.uleb128 0x3b
+ 1933 020d 0B       		.uleb128 0xb
+ 1934 020e 27       		.uleb128 0x27
+ 1935 020f 19       		.uleb128 0x19
+ 1936 0210 3C       		.uleb128 0x3c
+ 1937 0211 19       		.uleb128 0x19
+ 1938 0212 01       		.uleb128 0x1
+ 1939 0213 13       		.uleb128 0x13
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 37
+
+
+ 1940 0214 00       		.byte	0
+ 1941 0215 00       		.byte	0
+ 1942 0216 28       		.uleb128 0x28
+ 1943 0217 2E       		.uleb128 0x2e
+ 1944 0218 01       		.byte	0x1
+ 1945 0219 3F       		.uleb128 0x3f
+ 1946 021a 19       		.uleb128 0x19
+ 1947 021b 03       		.uleb128 0x3
+ 1948 021c 0E       		.uleb128 0xe
+ 1949 021d 3A       		.uleb128 0x3a
+ 1950 021e 0B       		.uleb128 0xb
+ 1951 021f 3B       		.uleb128 0x3b
+ 1952 0220 0B       		.uleb128 0xb
+ 1953 0221 27       		.uleb128 0x27
+ 1954 0222 19       		.uleb128 0x19
+ 1955 0223 49       		.uleb128 0x49
+ 1956 0224 13       		.uleb128 0x13
+ 1957 0225 3C       		.uleb128 0x3c
+ 1958 0226 19       		.uleb128 0x19
+ 1959 0227 01       		.uleb128 0x1
+ 1960 0228 13       		.uleb128 0x13
+ 1961 0229 00       		.byte	0
+ 1962 022a 00       		.byte	0
+ 1963 022b 29       		.uleb128 0x29
+ 1964 022c 2E       		.uleb128 0x2e
+ 1965 022d 00       		.byte	0
+ 1966 022e 3F       		.uleb128 0x3f
+ 1967 022f 19       		.uleb128 0x19
+ 1968 0230 03       		.uleb128 0x3
+ 1969 0231 0E       		.uleb128 0xe
+ 1970 0232 3A       		.uleb128 0x3a
+ 1971 0233 0B       		.uleb128 0xb
+ 1972 0234 3B       		.uleb128 0x3b
+ 1973 0235 0B       		.uleb128 0xb
+ 1974 0236 27       		.uleb128 0x27
+ 1975 0237 19       		.uleb128 0x19
+ 1976 0238 49       		.uleb128 0x49
+ 1977 0239 13       		.uleb128 0x13
+ 1978 023a 3C       		.uleb128 0x3c
+ 1979 023b 19       		.uleb128 0x19
+ 1980 023c 00       		.byte	0
+ 1981 023d 00       		.byte	0
+ 1982 023e 2A       		.uleb128 0x2a
+ 1983 023f 2E       		.uleb128 0x2e
+ 1984 0240 01       		.byte	0x1
+ 1985 0241 3F       		.uleb128 0x3f
+ 1986 0242 19       		.uleb128 0x19
+ 1987 0243 03       		.uleb128 0x3
+ 1988 0244 0E       		.uleb128 0xe
+ 1989 0245 3A       		.uleb128 0x3a
+ 1990 0246 0B       		.uleb128 0xb
+ 1991 0247 3B       		.uleb128 0x3b
+ 1992 0248 05       		.uleb128 0x5
+ 1993 0249 27       		.uleb128 0x27
+ 1994 024a 19       		.uleb128 0x19
+ 1995 024b 3C       		.uleb128 0x3c
+ 1996 024c 19       		.uleb128 0x19
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 38
+
+
+ 1997 024d 01       		.uleb128 0x1
+ 1998 024e 13       		.uleb128 0x13
+ 1999 024f 00       		.byte	0
+ 2000 0250 00       		.byte	0
+ 2001 0251 00       		.byte	0
+ 2002              		.section	.debug_loc,"",%progbits
+ 2003              	.Ldebug_loc0:
+ 2004              	.LLST0:
+ 2005 0000 06000000 		.4byte	.LVL10
+ 2006 0004 08000000 		.4byte	.LVL11
+ 2007 0008 0200     		.2byte	0x2
+ 2008 000a 30       		.byte	0x30
+ 2009 000b 9F       		.byte	0x9f
+ 2010 000c 08000000 		.4byte	.LVL11
+ 2011 0010 3A000000 		.4byte	.LVL18
+ 2012 0014 0100     		.2byte	0x1
+ 2013 0016 54       		.byte	0x54
+ 2014 0017 3A000000 		.4byte	.LVL18
+ 2015 001b 3C000000 		.4byte	.LVL19
+ 2016 001f 0100     		.2byte	0x1
+ 2017 0021 50       		.byte	0x50
+ 2018 0022 3C000000 		.4byte	.LVL19
+ 2019 0026 A0000000 		.4byte	.LFE63
+ 2020 002a 0100     		.2byte	0x1
+ 2021 002c 54       		.byte	0x54
+ 2022 002d 00000000 		.4byte	0
+ 2023 0031 00000000 		.4byte	0
+ 2024              		.section	.debug_aranges,"",%progbits
+ 2025 0000 24000000 		.4byte	0x24
+ 2026 0004 0200     		.2byte	0x2
+ 2027 0006 00000000 		.4byte	.Ldebug_info0
+ 2028 000a 04       		.byte	0x4
+ 2029 000b 00       		.byte	0
+ 2030 000c 0000     		.2byte	0
+ 2031 000e 0000     		.2byte	0
+ 2032 0010 00000000 		.4byte	.LFB64
+ 2033 0014 38000000 		.4byte	.LFE64-.LFB64
+ 2034 0018 00000000 		.4byte	.LFB63
+ 2035 001c A0000000 		.4byte	.LFE63-.LFB63
+ 2036 0020 00000000 		.4byte	0
+ 2037 0024 00000000 		.4byte	0
+ 2038              		.section	.debug_ranges,"",%progbits
+ 2039              	.Ldebug_ranges0:
+ 2040 0000 00000000 		.4byte	.LFB64
+ 2041 0004 38000000 		.4byte	.LFE64
+ 2042 0008 00000000 		.4byte	.LFB63
+ 2043 000c A0000000 		.4byte	.LFE63
+ 2044 0010 00000000 		.4byte	0
+ 2045 0014 00000000 		.4byte	0
+ 2046              		.section	.debug_line,"",%progbits
+ 2047              	.Ldebug_line0:
+ 2048 0000 77020000 		.section	.debug_str,"MS",%progbits,1
+ 2048      02002F02 
+ 2048      00000201 
+ 2048      FB0E0D00 
+ 2048      01010101 
+ 2049              	.LASF76:
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 39
+
+
+ 2050 0000 61646352 		.ascii	"adcResult\000"
+ 2050      6573756C 
+ 2050      7400
+ 2051              	.LASF22:
+ 2052 000a 704C6973 		.ascii	"pList\000"
+ 2052      7400
+ 2053              	.LASF28:
+ 2054 0010 4755495F 		.ascii	"GUI_CHARINFO\000"
+ 2054      43484152 
+ 2054      494E464F 
+ 2054      00
+ 2055              	.LASF58:
+ 2056 001d 70664973 		.ascii	"pfIsInFont\000"
+ 2056      496E466F 
+ 2056      6E7400
+ 2057              	.LASF43:
+ 2058 0028 42617365 		.ascii	"Baseline\000"
+ 2058      6C696E65 
+ 2058      00
+ 2059              	.LASF27:
+ 2060 0031 70446174 		.ascii	"pData\000"
+ 2060      6100
+ 2061              	.LASF97:
+ 2062 0037 4C45445F 		.ascii	"LED_YELLOW_Write\000"
+ 2062      59454C4C 
+ 2062      4F575F57 
+ 2062      72697465 
+ 2062      00
+ 2063              	.LASF47:
+ 2064 0048 74475549 		.ascii	"tGUI_GetLineDistX\000"
+ 2064      5F476574 
+ 2064      4C696E65 
+ 2064      44697374 
+ 2064      5800
+ 2065              	.LASF2:
+ 2066 005a 73686F72 		.ascii	"short int\000"
+ 2066      7420696E 
+ 2066      7400
+ 2067              	.LASF18:
+ 2068 0064 73697A65 		.ascii	"sizetype\000"
+ 2068      74797065 
+ 2068      00
+ 2069              	.LASF26:
+ 2070 006d 42797465 		.ascii	"BytesPerLine\000"
+ 2070      73506572 
+ 2070      4C696E65 
+ 2070      00
+ 2071              	.LASF73:
+ 2072 007a 496E6974 		.ascii	"InitProject\000"
+ 2072      50726F6A 
+ 2072      65637400 
+ 2073              	.LASF105:
+ 2074 0086 736F6E67 		.ascii	"songStored\000"
+ 2074      53746F72 
+ 2074      656400
+ 2075              	.LASF40:
+ 2076 0091 70547261 		.ascii	"pTrans\000"
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 40
+
+
+ 2076      6E7300
+ 2077              	.LASF38:
+ 2078 0098 4755495F 		.ascii	"GUI_FONT_PROP_EXT\000"
+ 2078      464F4E54 
+ 2078      5F50524F 
+ 2078      505F4558 
+ 2078      5400
+ 2079              	.LASF74:
+ 2080 00aa 6D61696E 		.ascii	"main\000"
+ 2080      00
+ 2081              	.LASF19:
+ 2082 00af 4755495F 		.ascii	"GUI_FONT_TRANSLIST\000"
+ 2082      464F4E54 
+ 2082      5F545241 
+ 2082      4E534C49 
+ 2082      535400
+ 2083              	.LASF44:
+ 2084 00c2 4C486569 		.ascii	"LHeight\000"
+ 2084      67687400 
+ 2085              	.LASF91:
+ 2086 00ca 4755495F 		.ascii	"GUI_Init\000"
+ 2086      496E6974 
+ 2086      00
+ 2087              	.LASF81:
+ 2088 00d3 4C43445F 		.ascii	"LCD_Char_1_Start\000"
+ 2088      43686172 
+ 2088      5F315F53 
+ 2088      74617274 
+ 2088      00
+ 2089              	.LASF63:
+ 2090 00e4 594D6167 		.ascii	"YMag\000"
+ 2090      00
+ 2091              	.LASF92:
+ 2092 00e9 4144435F 		.ascii	"ADC_SOUND_IN_GetResult16\000"
+ 2092      534F554E 
+ 2092      445F494E 
+ 2092      5F476574 
+ 2092      52657375 
+ 2093              	.LASF75:
+ 2094 0102 6C63645F 		.ascii	"lcd_position\000"
+ 2094      706F7369 
+ 2094      74696F6E 
+ 2094      00
+ 2095              	.LASF39:
+ 2096 010f 70547261 		.ascii	"pTransData\000"
+ 2096      6E734461 
+ 2096      746100
+ 2097              	.LASF24:
+ 2098 011a 5853697A 		.ascii	"XSize\000"
+ 2098      6500
+ 2099              	.LASF70:
+ 2100 0120 704D6F6E 		.ascii	"pMono\000"
+ 2100      6F00
+ 2101              	.LASF14:
+ 2102 0126 696E7431 		.ascii	"int16\000"
+ 2102      3600
+ 2103              	.LASF45:
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 41
+
+
+ 2104 012c 43486569 		.ascii	"CHeight\000"
+ 2104      67687400 
+ 2105              	.LASF53:
+ 2106 0134 74475549 		.ascii	"tGUI_ENC_APIList\000"
+ 2106      5F454E43 
+ 2106      5F415049 
+ 2106      4C697374 
+ 2106      00
+ 2107              	.LASF89:
+ 2108 0145 4144435F 		.ascii	"ADC_SOUND_IN_IsEndConversion\000"
+ 2108      534F554E 
+ 2108      445F494E 
+ 2108      5F497345 
+ 2108      6E64436F 
+ 2109              	.LASF30:
+ 2110 0162 58506F73 		.ascii	"XPos\000"
+ 2110      00
+ 2111              	.LASF42:
+ 2112 0167 466C6167 		.ascii	"Flags\000"
+ 2112      7300
+ 2113              	.LASF15:
+ 2114 016d 666C6F61 		.ascii	"float\000"
+ 2114      7400
+ 2115              	.LASF23:
+ 2116 0173 4755495F 		.ascii	"GUI_FONT_TRANSINFO\000"
+ 2116      464F4E54 
+ 2116      5F545241 
+ 2116      4E53494E 
+ 2116      464F00
+ 2117              	.LASF60:
+ 2118 0186 70616645 		.ascii	"pafEncode\000"
+ 2118      6E636F64 
+ 2118      6500
+ 2119              	.LASF35:
+ 2120 0190 70614368 		.ascii	"paCharInfo\000"
+ 2120      6172496E 
+ 2120      666F00
+ 2121              	.LASF36:
+ 2122 019b 704E6578 		.ascii	"pNext\000"
+ 2122      7400
+ 2123              	.LASF87:
+ 2124 01a1 414D7578 		.ascii	"AMux_1_Select\000"
+ 2124      5F315F53 
+ 2124      656C6563 
+ 2124      7400
+ 2125              	.LASF4:
+ 2126 01af 6C6F6E67 		.ascii	"long int\000"
+ 2126      20696E74 
+ 2126      00
+ 2127              	.LASF32:
+ 2128 01b8 4755495F 		.ascii	"GUI_CHARINFO_EXT\000"
+ 2128      43484152 
+ 2128      494E464F 
+ 2128      5F455854 
+ 2128      00
+ 2129              	.LASF67:
+ 2130 01c9 4755495F 		.ascii	"GUI_ISINFONT\000"
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 42
+
+
+ 2130      4953494E 
+ 2130      464F4E54 
+ 2130      00
+ 2131              	.LASF46:
+ 2132 01d6 4755495F 		.ascii	"GUI_FONTINFO\000"
+ 2132      464F4E54 
+ 2132      494E464F 
+ 2132      00
+ 2133              	.LASF104:
+ 2134 01e3 433A5C55 		.ascii	"C:\\Users\\YongY\\Downloads\\TFT_Tutorial_2022\\TFT"
+ 2134      73657273 
+ 2134      5C596F6E 
+ 2134      67595C44 
+ 2134      6F776E6C 
+ 2135 0211 5F776974 		.ascii	"_with_emWin\\Guitar Learner.cydsn\000"
+ 2135      685F656D 
+ 2135      57696E5C 
+ 2135      47756974 
+ 2135      6172204C 
+ 2136              	.LASF68:
+ 2137 0232 4755495F 		.ascii	"GUI_GETCHARINFO\000"
+ 2137      47455443 
+ 2137      48415249 
+ 2137      4E464F00 
+ 2138              	.LASF34:
+ 2139 0242 4C617374 		.ascii	"Last\000"
+ 2139      00
+ 2140              	.LASF64:
+ 2141 0247 4755495F 		.ascii	"GUI_DISPCHAR\000"
+ 2141      44495350 
+ 2141      43484152 
+ 2141      00
+ 2142              	.LASF83:
+ 2143 0254 4144435F 		.ascii	"ADC_SOUND_IN_StartConvert\000"
+ 2143      534F554E 
+ 2143      445F494E 
+ 2143      5F537461 
+ 2143      7274436F 
+ 2144              	.LASF93:
+ 2145 026e 4C43445F 		.ascii	"LCD_Char_1_PrintU32Number\000"
+ 2145      43686172 
+ 2145      5F315F50 
+ 2145      72696E74 
+ 2145      5533324E 
+ 2146              	.LASF11:
+ 2147 0288 75696E74 		.ascii	"uint8\000"
+ 2147      3800
+ 2148              	.LASF90:
+ 2149 028e 4C43445F 		.ascii	"LCD_Char_1_Position\000"
+ 2149      43686172 
+ 2149      5F315F50 
+ 2149      6F736974 
+ 2149      696F6E00 
+ 2150              	.LASF1:
+ 2151 02a2 756E7369 		.ascii	"unsigned char\000"
+ 2151      676E6564 
+ 2151      20636861 
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 43
+
+
+ 2151      7200
+ 2152              	.LASF59:
+ 2153 02b0 70664765 		.ascii	"pfGetCharInfo\000"
+ 2153      74436861 
+ 2153      72496E66 
+ 2153      6F00
+ 2154              	.LASF52:
+ 2155 02be 70664469 		.ascii	"pfDispLine\000"
+ 2155      73704C69 
+ 2155      6E6500
+ 2156              	.LASF0:
+ 2157 02c9 7369676E 		.ascii	"signed char\000"
+ 2157      65642063 
+ 2157      68617200 
+ 2158              	.LASF7:
+ 2159 02d5 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2159      206C6F6E 
+ 2159      6720756E 
+ 2159      7369676E 
+ 2159      65642069 
+ 2160              	.LASF72:
+ 2161 02ec 7050726F 		.ascii	"pPropExt\000"
+ 2161      70457874 
+ 2161      00
+ 2162              	.LASF25:
+ 2163 02f5 58446973 		.ascii	"XDist\000"
+ 2163      7400
+ 2164              	.LASF94:
+ 2165 02fb 43794465 		.ascii	"CyDelay\000"
+ 2165      6C617900 
+ 2166              	.LASF8:
+ 2167 0303 756E7369 		.ascii	"unsigned int\000"
+ 2167      676E6564 
+ 2167      20696E74 
+ 2167      00
+ 2168              	.LASF96:
+ 2169 0310 4C45445F 		.ascii	"LED_RED_Write\000"
+ 2169      5245445F 
+ 2169      57726974 
+ 2169      6500
+ 2170              	.LASF31:
+ 2171 031e 59506F73 		.ascii	"YPos\000"
+ 2171      00
+ 2172              	.LASF65:
+ 2173 0323 4755495F 		.ascii	"GUI_GETCHARDISTX\000"
+ 2173      47455443 
+ 2173      48415244 
+ 2173      49535458 
+ 2173      00
+ 2174              	.LASF29:
+ 2175 0334 5953697A 		.ascii	"YSize\000"
+ 2175      6500
+ 2176              	.LASF51:
+ 2177 033a 70664765 		.ascii	"pfGetLineLen\000"
+ 2177      744C696E 
+ 2177      654C656E 
+ 2177      00
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 44
+
+
+ 2178              	.LASF3:
+ 2179 0347 73686F72 		.ascii	"short unsigned int\000"
+ 2179      7420756E 
+ 2179      7369676E 
+ 2179      65642069 
+ 2179      6E7400
+ 2180              	.LASF69:
+ 2181 035a 70466F6E 		.ascii	"pFontData\000"
+ 2181      74446174 
+ 2181      6100
+ 2182              	.LASF84:
+ 2183 0364 414D7578 		.ascii	"AMux_1_Start\000"
+ 2183      5F315F53 
+ 2183      74617274 
+ 2183      00
+ 2184              	.LASF101:
+ 2185 0371 42544E5F 		.ascii	"BTN_DAW_Read\000"
+ 2185      4441575F 
+ 2185      52656164 
+ 2185      00
+ 2186              	.LASF17:
+ 2187 037e 63686172 		.ascii	"char\000"
+ 2187      00
+ 2188              	.LASF20:
+ 2189 0383 46697273 		.ascii	"FirstChar\000"
+ 2189      74436861 
+ 2189      7200
+ 2190              	.LASF50:
+ 2191 038d 70664765 		.ascii	"pfGetLineDistX\000"
+ 2191      744C696E 
+ 2191      65446973 
+ 2191      745800
+ 2192              	.LASF10:
+ 2193 039c 696E7433 		.ascii	"int32_t\000"
+ 2193      325F7400 
+ 2194              	.LASF54:
+ 2195 03a4 4755495F 		.ascii	"GUI_FONT\000"
+ 2195      464F4E54 
+ 2195      00
+ 2196              	.LASF100:
+ 2197 03ad 4755495F 		.ascii	"GUI_DispStringAt\000"
+ 2197      44697370 
+ 2197      53747269 
+ 2197      6E674174 
+ 2197      00
+ 2198              	.LASF86:
+ 2199 03be 4C43445F 		.ascii	"LCD_Char_1_WriteControl\000"
+ 2199      43686172 
+ 2199      5F315F57 
+ 2199      72697465 
+ 2199      436F6E74 
+ 2200              	.LASF98:
+ 2201 03d6 4C45445F 		.ascii	"LED_GREEN_Write\000"
+ 2201      47524545 
+ 2201      4E5F5772 
+ 2201      69746500 
+ 2202              	.LASF12:
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 45
+
+
+ 2203 03e6 75696E74 		.ascii	"uint16\000"
+ 2203      313600
+ 2204              	.LASF13:
+ 2205 03ed 75696E74 		.ascii	"uint32\000"
+ 2205      333200
+ 2206              	.LASF5:
+ 2207 03f4 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2207      20756E73 
+ 2207      69676E65 
+ 2207      6420696E 
+ 2207      7400
+ 2208              	.LASF16:
+ 2209 0406 646F7562 		.ascii	"double\000"
+ 2209      6C6500
+ 2210              	.LASF88:
+ 2211 040d 4755495F 		.ascii	"GUI_SetFont\000"
+ 2211      53657446 
+ 2211      6F6E7400 
+ 2212              	.LASF33:
+ 2213 0419 46697273 		.ascii	"First\000"
+ 2213      7400
+ 2214              	.LASF41:
+ 2215 041f 4755495F 		.ascii	"GUI_FONT_MONO\000"
+ 2215      464F4E54 
+ 2215      5F4D4F4E 
+ 2215      4F00
+ 2216              	.LASF6:
+ 2217 042d 6C6F6E67 		.ascii	"long long int\000"
+ 2217      206C6F6E 
+ 2217      6720696E 
+ 2217      7400
+ 2218              	.LASF103:
+ 2219 043b 2E5C6D61 		.ascii	".\\main.c\000"
+ 2219      696E2E63 
+ 2219      00
+ 2220              	.LASF9:
+ 2221 0444 5F5F696E 		.ascii	"__int32_t\000"
+ 2221      7433325F 
+ 2221      7400
+ 2222              	.LASF102:
+ 2223 044e 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 2223      4320342E 
+ 2223      392E3320 
+ 2223      32303135 
+ 2223      30333033 
+ 2224 0481 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m3 -mthumb -g -O"
+ 2224      20726576 
+ 2224      6973696F 
+ 2224      6E203232 
+ 2224      31323230 
+ 2225 04b4 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 2225      66756E63 
+ 2225      74696F6E 
+ 2225      2D736563 
+ 2225      74696F6E 
+ 2226              	.LASF56:
+ 2227 04dc 70664765 		.ascii	"pfGetCharDistX\000"
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 46
+
+
+ 2227      74436861 
+ 2227      72446973 
+ 2227      745800
+ 2228              	.LASF85:
+ 2229 04eb 4441435F 		.ascii	"DAC_SOUND_OUT_Start\000"
+ 2229      534F554E 
+ 2229      445F4F55 
+ 2229      545F5374 
+ 2229      61727400 
+ 2230              	.LASF66:
+ 2231 04ff 4755495F 		.ascii	"GUI_GETFONTINFO\000"
+ 2231      47455446 
+ 2231      4F4E5449 
+ 2231      4E464F00 
+ 2232              	.LASF62:
+ 2233 050f 584D6167 		.ascii	"XMag\000"
+ 2233      00
+ 2234              	.LASF95:
+ 2235 0514 42544E5F 		.ascii	"BTN_LEARN_Read\000"
+ 2235      4C454152 
+ 2235      4E5F5265 
+ 2235      616400
+ 2236              	.LASF37:
+ 2237 0523 4755495F 		.ascii	"GUI_FONT_PROP\000"
+ 2237      464F4E54 
+ 2237      5F50524F 
+ 2237      5000
+ 2238              	.LASF55:
+ 2239 0531 70664469 		.ascii	"pfDispChar\000"
+ 2239      73704368 
+ 2239      617200
+ 2240              	.LASF78:
+ 2241 053c 4755495F 		.ascii	"GUI_Font8x16\000"
+ 2241      466F6E74 
+ 2241      38783136 
+ 2241      00
+ 2242              	.LASF61:
+ 2243 0549 59446973 		.ascii	"YDist\000"
+ 2243      7400
+ 2244              	.LASF48:
+ 2245 054f 74475549 		.ascii	"tGUI_GetLineLen\000"
+ 2245      5F476574 
+ 2245      4C696E65 
+ 2245      4C656E00 
+ 2246              	.LASF79:
+ 2247 055f 5350494D 		.ascii	"SPIM_1_Start\000"
+ 2247      5F315F53 
+ 2247      74617274 
+ 2247      00
+ 2248              	.LASF77:
+ 2249 056c 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 2249      52784275 
+ 2249      66666572 
+ 2249      00
+ 2250              	.LASF71:
+ 2251 0579 7050726F 		.ascii	"pProp\000"
+ 2251      7000
+ARM GAS  C:\Users\YongY\AppData\Local\Temp\ccT4dZiv.s 			page 47
+
+
+ 2252              	.LASF57:
+ 2253 057f 70664765 		.ascii	"pfGetFontInfo\000"
+ 2253      74466F6E 
+ 2253      74496E66 
+ 2253      6F00
+ 2254              	.LASF49:
+ 2255 058d 74474C5F 		.ascii	"tGL_DispLine\000"
+ 2255      44697370 
+ 2255      4C696E65 
+ 2255      00
+ 2256              	.LASF99:
+ 2257 059a 4441435F 		.ascii	"DAC_SOUND_OUT_SetValue\000"
+ 2257      534F554E 
+ 2257      445F4F55 
+ 2257      545F5365 
+ 2257      7456616C 
+ 2258              	.LASF80:
+ 2259 05b1 4755495F 		.ascii	"GUI_Clear\000"
+ 2259      436C6561 
+ 2259      7200
+ 2260              	.LASF82:
+ 2261 05bb 4144435F 		.ascii	"ADC_SOUND_IN_Start\000"
+ 2261      534F554E 
+ 2261      445F494E 
+ 2261      5F537461 
+ 2261      727400
+ 2262              	.LASF21:
+ 2263 05ce 4C617374 		.ascii	"LastChar\000"
+ 2263      43686172 
+ 2263      00
+ 2264              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br
